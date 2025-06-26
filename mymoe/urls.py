@@ -15,8 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.shortcuts import render, redirect
+from employees.views import mymoe_home
+
+def index(request):
+    if request.user.is_authenticated:
+        return redirect('mymoe_home')
+    return render(request, 'index.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('employees.urls')),
+    path('mymoe/', mymoe_home, name='mymoe_home'),
+    path('', index, name='home'),
 ]
