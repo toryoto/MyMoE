@@ -21,6 +21,11 @@ class DepartmentListView(LoginRequiredMixin, ListView):
     template_name = 'departments/department_list.html'
     context_object_name = 'departments'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['employee'] = self.request.user
+        return context
+
 class DepartmentDetailView(LoginRequiredMixin, DetailView):
     model = Department
     template_name = 'departments/department_detail.html'
@@ -48,6 +53,11 @@ class DTEListView(LoginRequiredMixin, ListView):
     model = DTE
     template_name = 'departments/dte_list.html'
     context_object_name = 'dtes'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['employee'] = self.request.user
+        return context
 
 class DTEDetailView(LoginRequiredMixin, DetailView):
     model = DTE
