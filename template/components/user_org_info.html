@@ -1,0 +1,7 @@
+{% if employee.department %}
+<div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+    <p class="font-bold">Your Organization:</p>
+    <p>Department: {{ employee.department.name }} {% if employee.department.code %}({{ employee.department.code }}){% endif %}</p>
+    <p>DTE: {% if employee.dte %}{{ employee.dte.name }} {% if employee.dte.code %}({{ employee.dte.code }}){% endif %}{% else %}N/A{% endif %}</p>
+</div>
+{% endif %}
