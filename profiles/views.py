@@ -3,7 +3,7 @@ from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import EmployeeProfile
-from .forms import EmployeeProfileForm
+from .forms import EmployeeProfileForm,SignUpForm
 
 class EmployeeProfileCreateView(LoginRequiredMixin, CreateView):
     model = EmployeeProfile
@@ -45,3 +45,15 @@ class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
     def test_func(self):
         profile = self.get_object()
         return self.request.user == profile.user
+    
+# 新規登録（Sign Up）画面のビュー関数を追加
+def sign_up(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            # フォームのデータを処理します
+            pass
+    else:
+        form = SignUpForm()
+    
+    return render(request, 'profiles/sign_up.html', {'form': form})
