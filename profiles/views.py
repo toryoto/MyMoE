@@ -28,20 +28,13 @@ class MyProfileDetailView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         return get_object_or_404(EmployeeProfile, user=self.request.user)
 
-class EmployeeProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class EmployeeProfileDetailView(LoginRequiredMixin, DetailView):
     model = EmployeeProfile
     template_name = 'profiles/employee_profile_detail.html'
     context_object_name = 'profile'
 
     def get_object(self, queryset=None):
         return super().get_object(queryset)
-
-    def test_func(self):
-        profile = self.get_object()
-        return self.request.user.is_hr or self.request.user == profile.user
-
-    def handle_no_permission(self):
-        return redirect('home')
 
 class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = EmployeeProfile
