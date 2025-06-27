@@ -9,6 +9,9 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                    'sans': ['YuGothic', 'Yu Gothic', '游ゴシック体', '游ゴシック', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'Hiragino Kaku Gothic ProN', 'メイリオ', 'Meiryo', 'sans-serif'],
+                    },
                     colors: {
                         primary: {
                             50: '#eff6ff',
@@ -41,7 +44,7 @@
                         <a href="{% url 'mymoe_home' %}" class="text-gray-900 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             ダッシュボード
                         </a>
-                        <a href="{% url 'profile_detail' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <a href="{% url 'profiles:my_profile_detail' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             プロフィール
                         </a>
                         <a href="{% url 'departments:department_list' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
@@ -50,7 +53,7 @@
                         <a href="{% url 'departments:dte_list' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             部門
                         </a>
-                        <a href="#" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <a href="{% url 'employees:employee_list' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             社員検索
                         </a>
                     </div>
@@ -95,7 +98,7 @@
     </nav>
 
     <!-- メインコンテンツ -->
-    <main class="flex-grow max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <main class="flex-grow {% block main_classes %}max-w-7xl mx-auto{% endblock %} py-6 px-4 sm:px-6 lg:px-8">
         {% block content %}
         {% endblock %}
     </main>

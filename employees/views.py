@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
+from django.views.generic import ListView
 from .forms import EmployeeCreationForm
+from .models import Employee
 
 def mymoe_home(request):
     if not request.user.is_authenticated:
@@ -17,3 +19,9 @@ def signup(request):
     else:
         form = EmployeeCreationForm()
     return render(request, 'employees/signup.html', {'form': form})
+
+class EmployeeListView(ListView):
+    model = Employee
+    template_name = 'employees/employee_list.html'
+    context_object_name = 'employees'
+    paginate_by = 10

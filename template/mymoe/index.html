@@ -39,16 +39,16 @@
                 </div>
             </div>
             <div class="mt-4 flex space-x-2">
-                <a href="{% url 'profile_detail' %}" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
+                <a href="{% url 'profiles:my_profile_detail' %}" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
                     表示
                 </a>
-                <a href="{% url 'profile_edit' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
+                <a href="{% url 'profiles:profile_edit' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
                     編集
                 </a>
             </div>
         </div>
 
-        <!-- 社員検索 -->
+        <!-- 社員一覧 -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div class="mt-4">
-                <a href="#" class="text-sm bg-green-50 text-green-600 px-3 py-1 rounded-md hover:bg-green-100 transition-colors">
+                <a href="{% url 'employees:employee_list' %}" class="text-sm bg-green-50 text-green-600 px-3 py-1 rounded-md hover:bg-green-100 transition-colors">
                     検索する
                 </a>
             </div>
@@ -103,7 +103,7 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">レポート</h3>
+                    <h3 class="text-lg font-medium text-gray-900">データ</h3>
                     <p class="text-sm text-gray-500">統計・分析</p>
                 </div>
             </div>
