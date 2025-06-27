@@ -1,17 +1,161 @@
 {% extends 'base.html' %}
 
-{% block content %}
-  <h1>MyMoe</h1>
+{% block title %}ダッシュボード - MyMoE{% endblock %}
 
-  {% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-link">Logout</button>
-    </form>
-  {% else %}
-    <p>You are not logged in.</p>
-    <a href="{% url 'login' %}">Login</a>
-    <a href="{% url 'signup' %}">Sign Up</a>
-  {% endif %}
+{% block content %}
+    <!-- ウェルカムセクション -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">
+                    おかえりなさい、{{ user.get_full_name|default:user.username }}さん
+                </h1>
+                <p class="text-gray-600 mt-1">今日も一日お疲れさまです</p>
+            </div>
+            <div class="hidden md:block">
+                <div class="text-right text-sm text-gray-500">
+                    <p>最終ログイン</p>
+                    <p class="font-medium">{{ user.last_login|date:"Y年m月d日 H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- クイックアクション -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- プロフィール管理 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium text-gray-900">プロフィール</h3>
+                    <p class="text-sm text-gray-500">個人情報を管理</p>
+                </div>
+            </div>
+            <div class="mt-4 flex space-x-2">
+                <a href="{% url 'profile_detail' %}" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
+                    表示
+                </a>
+                <a href="{% url 'profile_edit' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
+                    編集
+                </a>
+            </div>
+        </div>
+
+        <!-- 社員検索 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium text-gray-900">社員検索</h3>
+                    <p class="text-sm text-gray-500">同僚を検索</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="#" class="text-sm bg-green-50 text-green-600 px-3 py-1 rounded-md hover:bg-green-100 transition-colors">
+                    検索する
+                </a>
+            </div>
+        </div>
+
+        <!-- 勤怠管理（将来実装） -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 opacity-50">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium text-gray-900">勤怠管理</h3>
+                    <p class="text-sm text-gray-500">出退勤記録</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-sm bg-gray-100 text-gray-400 px-3 py-1 rounded-md">
+                    準備中
+                </span>
+            </div>
+        </div>
+
+        <!-- レポート（将来実装） -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 opacity-50">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium text-gray-900">レポート</h3>
+                    <p class="text-sm text-gray-500">統計・分析</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-sm bg-gray-100 text-gray-400 px-3 py-1 rounded-md">
+                    準備中
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- お知らせエリア -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 最近のアクティビティ -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">最近のアクティビティ</h2>
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <p class="text-sm text-gray-600">プロフィールが更新されました</p>
+                    <span class="text-xs text-gray-400">2時間前</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <p class="text-sm text-gray-600">ログインしました</p>
+                    <span class="text-xs text-gray-400">1日前</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <p class="text-sm text-gray-600">パスワードが変更されました</p>
+                    <span class="text-xs text-gray-400">3日前</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- お知らせ -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">お知らせ</h2>
+            <div class="space-y-3">
+                <div class="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                    <h3 class="text-sm font-medium text-blue-800">システムメンテナンス</h3>
+                    <p class="text-xs text-blue-600 mt-1">12/31 23:00-1:00にメンテナンスを実施します</p>
+                </div>
+                <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                    <h3 class="text-sm font-medium text-green-800">新機能追加</h3>
+                    <p class="text-xs text-green-600 mt-1">社員検索機能がリリースされました</p>
+                </div>
+                <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                    <h3 class="text-sm font-medium text-yellow-800">プロフィール更新のお願い</h3>
+                    <p class="text-xs text-yellow-600 mt-1">最新情報の更新をお願いします</p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
