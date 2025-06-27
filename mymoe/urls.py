@@ -12,6 +12,7 @@ def index(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('employees.urls')),
+    path('employees/', include(('employees.urls', 'employees'), namespace='employees')),
     path('profiles/', include('profiles.urls')),
     path('mymoe/', mymoe_home, name='mymoe_home'),
     path('departments/', include('departments.urls')),
