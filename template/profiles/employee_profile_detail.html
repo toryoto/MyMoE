@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">My Profile</h2>
+    <p><strong>Username:</strong> {{ profile.user.username }}</p>
+    <p><strong>Email:</strong> {{ profile.user.email }}</p>
+    <p><strong>Phone Number:</strong> {{ profile.phone_number|default:"N/A" }}</p>
+    <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|default:"N/A" }}</p>
+    <p><strong>Bio:</strong> {{ profile.bio|default:"N/A" }}</p>
+    <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+    <a href="{% url 'mymoe_home' %}" class="btn btn-secondary">Back to Home</a>
+</div>
+{% endblock %}
