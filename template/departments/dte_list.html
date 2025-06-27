@@ -3,17 +3,35 @@
 {% block title %}DTEs{% endblock %}
 
 {% block content %}
-    <h1>DTEs</h1>
-    <a href="{% url 'departments:dte_add' %}">Add New DTE</a>
-    <ul>
-        {% for dte in dtes %}
-            <li>
-                <a href="{% url 'departments:dte_detail' dte.pk %}">{{ dte.name }} ({{ dte.code }}) - {{ dte.department.name }}</a>
-                <a href="{% url 'departments:dte_edit' dte.pk %}">Edit</a>
-                <a href="{% url 'departments:dte_delete' dte.pk %}">Delete</a>
-            </li>
-        {% empty %}
-            <li>No DTEs found.</li>
-        {% endfor %}
-    </ul>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">DTEs</h1>
+        {% if user.is_superuser %}
+        <div class="mb-4">
+            <a href="{% url 'departments:dte_add' %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+                Add New DTE
+            </a>
+        </div>
+        {% endif %}
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <ul class="divide-y divide-gray-200">
+                {% for dte in dtes %}
+                    <li class="px-4 py-4 sm:px-6 flex items-center justify-between">
+                        <div class="text-lg font-medium text-gray-900">
+                            <a href="{% url 'departments:dte_detail' dte.pk %}" class="text-primary-600 hover:text-primary-800">
+                                {{ dte.name }} ({{ dte.code }}) - {{ dte.department.name }}
+                            </a>
+                        </div>
+                        {% if user.is_superuser %}
+                        <div class="flex space-x-3">
+                            <a href="{% url 'departments:dte_edit' dte.pk %}" class="text-sm text-primary-600 hover:text-primary-800 font-medium">Edit</a>
+                            <a href="{% url 'departments:dte_delete' dte.pk %}" class="text-sm text-red-600 hover:text-red-800 font-medium">Delete</a>
+                        </div>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li class="px-4 py-4 sm:px-6 text-gray-500">No DTEs found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% endblock %}

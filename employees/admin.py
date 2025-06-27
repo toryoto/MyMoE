@@ -8,13 +8,13 @@ class EmployeeAdmin(UserAdmin):
     """
     Employee model の管理画面設定
     """
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'department', 'dte')
-    list_filter = ('is_staff', 'is_active', 'date_joined', 'department', 'dte')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'department', 'dte', 'is_hr')
+    list_filter = ('is_staff', 'is_active', 'date_joined', 'department', 'dte', 'is_hr')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('username',)
     
     fieldsets = UserAdmin.fieldsets + (
-        ('Organization Info', {'fields': ('department', 'dte')}),
+        ('Organization Info', {'fields': ('department', 'dte', 'is_hr')}),
     )
 
     class Media:
