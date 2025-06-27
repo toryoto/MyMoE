@@ -13,7 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('employees.urls')),
     path('employees/', include(('employees.urls', 'employees'), namespace='employees')),
-    path('profiles/', include('profiles.urls')),
+    path('profiles/', include(('profiles.urls', 'profiles'), namespace='profiles')),
     path('mymoe/', mymoe_home, name='mymoe_home'),
     path('departments/', include('departments.urls')),
     path('api/departments/<int:department_id>/dtes/', dtes_by_department, name='dtes_by_department'),

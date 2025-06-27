@@ -9,34 +9,49 @@ class EmployeeProfileCreateView(LoginRequiredMixin, CreateView):
     model = EmployeeProfile
     form_class = EmployeeProfileForm
     template_name = 'profiles/employee_profile_form.html'
-    success_url = reverse_lazy('profile_detail')
+    success_url = reverse_lazy('profiles:my_profile_detail')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class EmployeeProfileDetailView(LoginRequiredMixin, DetailView):
+class MyProfileDetailView(LoginRequiredMixin, DetailView):
     model = EmployeeProfile
     template_name = 'profiles/employee_profile_detail.html'
     context_object_name = 'profile'
 
     def dispatch(self, request, *args, **kwargs):
         if not EmployeeProfile.objects.filter(user=request.user).exists():
-            return redirect('profile_create')
+            return redirect('profiles:profile_create')
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         return get_object_or_404(EmployeeProfile, user=self.request.user)
 
+class EmployeeProfileDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = EmployeeProfile
+    template_name = 'profiles/employee_profile_detail.html'
+    context_object_name = 'profile'
+
+    def get_object(self, queryset=None):
+        return super().get_object(queryset)
+
+    def test_func(self):
+        profile = self.get_object()
+        return self.request.user.is_hr or self.request.user == profile.user
+
+    def handle_no_permission(self):
+        return redirect('home')
+
 class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = EmployeeProfile
     form_class = EmployeeProfileForm
     template_name = 'profiles/employee_profile_form.html'
-    success_url = reverse_lazy('profile_detail')
+    success_url = reverse_lazy('profiles:my_profile_detail')
 
     def dispatch(self, request, *args, **kwargs):
         if not EmployeeProfile.objects.filter(user=request.user).exists():
-            return redirect('profile_create')
+            return redirect('profiles:profile_create')
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):

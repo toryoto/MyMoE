@@ -80,7 +80,11 @@
                                 {{ employee.dte.name|default:"未設定" }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-primary-600 hover:text-primary-900">詳細</a>
+                                {% if employee.employeeprofile %}
+                                <a href="{% url 'profiles:profile_detail' employee.employeeprofile.pk %}" class="text-primary-600 hover:text-primary-900">詳細</a>
+                                {% else %}
+                                <span class="text-gray-400">未登録</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% empty %}
