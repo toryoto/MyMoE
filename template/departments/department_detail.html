@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ department.name }} - Department Detail{% endblock %}
+
+{% block content %}
+    <h1>{{ department.name }} ({{ department.code }})</h1>
+    <p>Description: {{ department.description }}</p>
+    <p>Active: {{ department.is_active }}</p>
+    <a href="{% url 'departments:department_edit' department.pk %}">Edit</a>
+    <a href="{% url 'departments:department_delete' department.pk %}">Delete</a>
+    <a href="{% url 'departments:department_list' %}">Back to Departments</a>
+
+    <h2>DTEs in this Department</h2>
+    <ul>
+        {% for dte in department.dtes.all %}
+            <li>{{ dte.name }} ({{ dte.code }})</li>
+        {% empty %}
+            <li>No DTEs found for this department.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}DTEs{% endblock %}
+
+{% block content %}
+    <h1>DTEs</h1>
+    <a href="{% url 'departments:dte_add' %}">Add New DTE</a>
+    <ul>
+        {% for dte in dtes %}
+            <li>
+                <a href="{% url 'departments:dte_detail' dte.pk %}">{{ dte.name }} ({{ dte.code }}) - {{ dte.department.name }}</a>
+                <a href="{% url 'departments:dte_edit' dte.pk %}">Edit</a>
+                <a href="{% url 'departments:dte_delete' dte.pk %}">Delete</a>
+            </li>
+        {% empty %}
+            <li>No DTEs found.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

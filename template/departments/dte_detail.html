@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ dte.name }} - DTE Detail{% endblock %}
+
+{% block content %}
+    <h1>{{ dte.name }} ({{ dte.code }})</h1>
+    <p>Department: {{ dte.department.name }}</p>
+    <p>Description: {{ dte.description }}</p>
+    <p>Active: {{ dte.is_active }}</p>
+    <a href="{% url 'departments:dte_edit' dte.pk %}">Edit</a>
+    <a href="{% url 'departments:dte_delete' dte.pk %}">Delete</a>
+    <a href="{% url 'departments:dte_list' %}">Back to DTEs</a>
+{% endblock %}
