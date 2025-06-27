@@ -1,5 +1,7 @@
 from django.urls import path
 from .views import EmployeeProfileCreateView, EmployeeProfileDetailView, EmployeeProfileUpdateView
+from django.conf import settings
+
 
 urlpatterns = [
     path('create/', EmployeeProfileCreateView.as_view(), name='profile_create'),
