@@ -17,4 +17,5 @@ urlpatterns = [
     path('departments/', include('departments.urls')),
     path('api/departments/<int:department_id>/dtes/', dtes_by_department, name='dtes_by_department'),
     path('', index, name='home'),
+    path('profiles/', include('profiles.urls'))
 ]
