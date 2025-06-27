@@ -23,15 +23,4 @@ class EmployeeAdmin(UserAdmin):
             'admin/js/employee_dte_filter.js',
         )
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "dte":
-            # Initially, show no DTEs or only DTEs related to the currently selected department if editing an existing employee
-            if request.resolver_match.kwargs.get('object_id'): # Editing existing object
-                employee = Employee.objects.get(pk=request.resolver_match.kwargs['object_id'])
-                if employee.department:
-                    kwargs["queryset"] = DTE.objects.filter(department=employee.department)
-                else:
-                    kwargs["queryset"] = DTE.objects.none()
-            else: # Adding new object
-                kwargs["queryset"] = DTE.objects.none()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
