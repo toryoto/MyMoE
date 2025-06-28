@@ -1,18 +1,155 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}My Profile{% endblock %}
+{% block title %}
+  {{ profile.user.username }}'s Profile
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="my-4">My Profile</h2>
-    <p><strong>Username:</strong> {{ profile.user.username }}</p>
-    <p><strong>Email:</strong> {{ profile.user.email }}</p>
-    <p><strong>Phone Number:</strong> {{ profile.phone_number|default:"N/A" }}</p>
-    <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|default:"N/A" }}</p>
-    <p><strong>Bio:</strong> {{ profile.bio|default:"N/A" }}</p>
-    {% if profile.user == request.user %}
-    <a href="{% url 'profiles:profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+<div class="container mx-auto px-4 py-8">
+  <div class="bg-white shadow-md rounded-lg p-6">
+    <div class="flex items-center mb-6">
+      <img class="w-24 h-24 rounded-full mr-6" src="{{ profile.avatar.url }}" alt="Avatar of {{ profile.user.username }}">
+      <div>
+        <h1 class="text-3xl font-bold">{{ profile.user.first_name }} {{ profile.user.last_name }}</h1>
+        <p class="text-gray-600">@{{ profile.user.username }}</p>
+      </div>
+    </div>
+
+    <div id="user-org-info-container">
+        {% include 'components/user_org_info.html' with employee=profile.user %}
+    </div>
+
+    {% if request.user.is_hr %}
+    <div class="mt-6 p-4 bg-gray-100 rounded-lg">
+        <h3 class="text-lg font-semibold mb-2">Update Organization Info</h3>
+        <div class="flex space-x-4">
+            <div>
+                <label for="department-select" class="block text-sm font-medium text-gray-700">Department</label>
+                <select id="department-select" name="department" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">Select Department</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}" {% if profile.user.department.id == department.id %}selected{% endif %}>{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="dte-select" class="block text-sm font-medium text-gray-700">DTE</label>
+                <select id="dte-select" name="dte" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">Select DTE</option>
+                </select>
+            </div>
+        </div>
+        <button id="update-org-info-btn" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+            Update
+        </button>
+        <p id="update-status" class="mt-2 text-sm"></p>
+    </div>
     {% endif %}
-    <a href="{% url 'mymoe_home' %}" class="btn btn-secondary">Back to Home</a>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <div>
+        <h2 class="text-xl font-semibold mb-2">Contact Information</h2>
+        <ul class="text-gray-700">
+          <li><strong>Email:</strong> {{ profile.user.email }}</li>
+          <li><strong>Phone:</strong> {{ profile.phone_number }}</li>
+          <li><strong>Address:</strong> {{ profile.address }}</li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold mb-2">Additional Information</h2>
+        <ul class="text-gray-700">
+          <li><strong>Birth Date:</strong> {{ profile.birth_date }}</li>
+          <li><strong>Gender:</strong> {{ profile.get_gender_display }}</li>
+          <li><strong>Hire Date:</strong> {{ profile.hire_date }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold mb-2">Bio</h2>
+      <p class="text-gray-700">{{ profile.bio }}</p>
+    </div>
+
+    {% if request.user == profile.user %}
+    <div class="mt-8">
+      <a href="{% url 'profiles:my_profile_update' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Edit Profile
+      </a>
+    </div>
+    {% endif %}
+  </div>
 </div>
+
+{% if request.user.is_hr %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentSelect = document.getElementById('department-select');
+    const dteSelect = document.getElementById('dte-select');
+    const updateBtn = document.getElementById('update-org-info-btn');
+    const updateStatus = document.getElementById('update-status');
+
+    function fetchDTEs(departmentId, selectedDteId) {
+        if (!departmentId) {
+            dteSelect.innerHTML = '<option value="">Select DTE</option>';
+            return;
+        }
+        fetch(`/profiles/get-dtes/${departmentId}/`)
+            .then(response => response.json())
+            .then(data => {
+                dteSelect.innerHTML = '<option value="">Select DTE</option>';
+                data.forEach(dte => {
+                    const option = document.createElement('option');
+                    option.value = dte.id;
+                    option.textContent = dte.name;
+                    if (selectedDteId && dte.id == selectedDteId) {
+                        option.selected = true;
+                    }
+                    dteSelect.appendChild(option);
+                });
+            });
+    }
+
+    departmentSelect.addEventListener('change', function() {
+        fetchDTEs(this.value, null);
+    });
+
+    updateBtn.addEventListener('click', function() {
+        const departmentId = departmentSelect.value;
+        const dteId = dteSelect.value;
+        const employeeId = "{{ profile.user.pk }}";
+
+        fetch(`/profiles/update-org-info/${employeeId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ department_id: departmentId, dte_id: dteId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateStatus.textContent = data.message;
+                updateStatus.className = 'text-green-600';
+                document.getElementById('user-org-info-container').innerHTML = data.html;
+            } else {
+                updateStatus.textContent = data.message;
+                updateStatus.className = 'text-red-600';
+            }
+        })
+        .catch(error => {
+            updateStatus.textContent = 'An error occurred.';
+            updateStatus.className = 'text-red-600';
+        });
+    });
+
+    // Initial fetch for DTEs on page load
+    const initialDepartmentId = departmentSelect.value;
+    const initialDteId = "{{ profile.user.dte.id|default:'' }}";
+    if(initialDepartmentId){
+        fetchDTEs(initialDepartmentId, initialDteId);
+    }
+});
+</script>
+{% endif %}
 {% endblock %}
