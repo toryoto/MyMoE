@@ -7,6 +7,7 @@ class Employee(AbstractUser):
     department = models.ForeignKey(Department, on_delete=models.PROTECT, related_name='employees', null=True, blank=True)
     dte = models.ForeignKey(DTE, on_delete=models.PROTECT, related_name='employees', null=True, blank=True)
     is_hr = models.BooleanField(default=False)
+    force_password_change = models.BooleanField(default=False)
 
     def clean(self):
         super().clean()
