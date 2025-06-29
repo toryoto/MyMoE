@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import EmployeeProfile
+from .models import EmployeeProfile, Skill
 from .forms import EmployeeProfileForm
 from django.http import JsonResponse
 from django.views import View
@@ -11,11 +11,24 @@ from departments.models import Department, DTE
 import json
 from django.template.loader import render_to_string
 
+class SkillSearchView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q', '')
+        skills = Skill.objects.filter(name__icontains=query)[:10] # 最大10件返す
+        results = list(skills.values('id', 'name'))
+        print(results)
+        return JsonResponse(results, safe=False)
+
 class EmployeeProfileCreateView(LoginRequiredMixin, CreateView):
     model = EmployeeProfile
     form_class = EmployeeProfileForm
     template_name = 'profiles/employee_profile_form.html'
     success_url = reverse_lazy('profiles:my_profile_detail')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['initial_skill_ids'] = []
+        return context
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -27,8 +40,10 @@ class MyProfileDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'profile'
 
     def dispatch(self, request, *args, **kwargs):
-        if not EmployeeProfile.objects.filter(user=request.user).exists():
-            return redirect('profiles:profile_create')
+        # プロフィールが存在しない場合は作成ページにリダイレクト
+        profile, created = EmployeeProfile.objects.get_or_create(user=request.user)
+        if created:
+            return redirect('profiles:my_profile_update')
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -54,12 +69,23 @@ class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
     template_name = 'profiles/employee_profile_form.html'
     success_url = reverse_lazy('profiles:my_profile_detail')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # テンプレートに渡すために、現在のスキルIDのリストを作成
+        context['initial_skill_ids'] = list(self.object.skills.values_list('id', flat=True))
+        return context
+
     def dispatch(self, request, *args, **kwargs):
-        if not EmployeeProfile.objects.filter(user=request.user).exists():
-            return redirect('profiles:profile_create')
+        # プロフィールが存在しない場合は作成(employees/signals.pyで自動作成されているが、念の為)
+        profile, created = EmployeeProfile.objects.get_or_create(user=request.user)
+        if created:
+            # 新規作成の場合は、オブジェクトをセットしてからUpdateViewの処理を継続
+            self.kwargs['pk'] = profile.pk
+        
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
+        # URLのpkではなく、常にログインユーザーのプロフィールを返す
         return get_object_or_404(EmployeeProfile, user=self.request.user)
 
     def test_func(self):
