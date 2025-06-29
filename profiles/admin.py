@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import EmployeeProfile
+from .models import EmployeeProfile, Skill
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(EmployeeProfile)
 class EmployeeProfileAdmin(admin.ModelAdmin):
@@ -10,6 +15,7 @@ class EmployeeProfileAdmin(admin.ModelAdmin):
     list_filter = ('date_of_birth',)
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
     ordering = ('user__username',)
+    filter_horizontal = ('skills',)
     
     fieldsets = (
         ('基本情報', {
@@ -17,6 +23,9 @@ class EmployeeProfileAdmin(admin.ModelAdmin):
         }),
         ('個人情報', {
             'fields': ('phone_number', 'date_of_birth', 'bio')
+        }),
+        ('スキル', {
+            'fields': ('skills',)
         }),
     )
     
