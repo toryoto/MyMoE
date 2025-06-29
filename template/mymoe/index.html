@@ -42,7 +42,7 @@
                 <a href="{% url 'profiles:my_profile_detail' %}" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
                     表示
                 </a>
-                <a href="{% url 'profiles:profile_edit' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
+                <a href="{% url 'profiles:my_profile_update' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
                     編集
                 </a>
             </div>
@@ -113,31 +113,6 @@
             </div>
         </div>
     </div>
-
-    <!-- お知らせエリア -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- 最近のアクティビティ -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">最近のアクティビティ</h2>
-            <div class="space-y-3">
-                <div class="flex items-center space-x-3">
-                    <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <p class="text-sm text-gray-600">プロフィールが更新されました</p>
-                    <span class="text-xs text-gray-400">2時間前</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <p class="text-sm text-gray-600">ログインしました</p>
-                    <span class="text-xs text-gray-400">1日前</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <div class="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <p class="text-sm text-gray-600">パスワードが変更されました</p>
-                    <span class="text-xs text-gray-400">3日前</span>
-                </div>
-            </div>
-        </div>
-
         <!-- お知らせ -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 class="text-lg font-medium text-gray-900 mb-4">お知らせ</h2>
