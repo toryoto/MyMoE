@@ -1,33 +1,280 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ department.name }} - Department Detail{% endblock %}
+{% block title %}{{ department.name }} - 部署詳細 - MyMoE{% endblock %}
 
 {% block content %}
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ department.name }} ({{ department.code }})</h1>
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg p-6 mb-6">
-            <p class="text-gray-700 mb-2"><strong class="font-semibold">Description:</strong> {{ department.description|default:"N/A" }}</p>
-            <p class="text-gray-700 mb-4"><strong class="font-semibold">Active:</strong> {{ department.is_active|yesno:"Yes,No" }}</p>
-            {% if user.is_superuser %}
-            <div class="flex space-x-4">
-                <a href="{% url 'departments:department_edit' department.pk %}" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">Edit</a>
-                <a href="{% url 'departments:department_delete' department.pk %}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">Delete</a>
-                <a href="{% url 'departments:department_list' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition-colors duration-200">Back to Departments</a>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ブレッドクラム -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'departments:department_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    部署一覧
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ department.name }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- 部署ヘッダー -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-6">
+            <div class="sm:flex sm:items-center sm:justify-between">
+                <div class="sm:flex sm:items-center">
+                    <div class="flex-shrink-0">
+                        <div class="h-16 w-16 rounded-xl bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                            <span class="text-xl font-bold text-white">
+                                {{ department.code|slice:":2"|upper }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-4 sm:mt-0 sm:ml-6">
+                        <div class="flex items-center space-x-3">
+                            <h1 class="text-2xl font-bold text-gray-900">{{ department.name }}</h1>
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                {{ department.code }}
+                            </span>
+                            {% if not department.is_active %}
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
+                                    <circle cx="4" cy="4" r="3" />
+                                </svg>
+                                非アクティブ
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if department.description %}
+                        <p class="mt-2 text-gray-600">{{ department.description }}</p>
+                        {% endif %}
+                        <div class="mt-3 flex items-center space-x-6 text-sm text-gray-500">
+                            <div class="flex items-center">
+                                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                {{ department.employees.count }}名の社員
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
+                                </svg>
+                                {{ department.dtes.count }}のDTE
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if user.is_superuser %}
+                <div class="mt-5 sm:mt-0 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                    <a href="{% url 'departments:department_edit' department.pk %}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        編集
+                    </a>
+                    <a href="{% url 'departments:department_delete' department.pk %}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        削除
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- DTE一覧 -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-medium text-gray-900">所属DTE</h2>
+                        {% if user.is_superuser %}
+                        <a href="{% url 'departments:dte_add' %}" 
+                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            DTE追加
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    {% for dte in department.dtes.all %}
+                    <div class="px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-8 w-8 rounded-lg bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center">
+                                            <span class="text-xs font-bold text-white">
+                                                {{ dte.code|slice:":2"|upper }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center space-x-2">
+                                            <h3 class="text-sm font-medium text-gray-900 truncate">{{ dte.name }}</h3>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                {{ dte.code }}
+                                            </span>
+                                            {% if not dte.is_active %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                非アクティブ
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="mt-1 flex items-center text-xs text-gray-500">
+                                            <svg class="mr-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            {{ dte.employees.count }}名
+                                        </div>
+                                        {% if dte.description %}
+                                        <p class="mt-1 text-xs text-gray-600 line-clamp-1">{{ dte.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <a href="{% url 'departments:dte_detail' dte.pk %}" 
+                                   class="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs leading-4 font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
+                                    詳細
+                                </a>
+                                {% if user.is_superuser %}
+                                <a href="{% url 'departments:dte_edit' dte.pk %}" 
+                                   class="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs leading-4 font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
+                                    編集
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="px-6 py-8 text-center">
+                        <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">DTEが登録されていません</h3>
+                        <p class="mt-1 text-sm text-gray-500">この部署にはまだDTEが登録されていません。</p>
+                        {% if user.is_superuser %}
+                        <div class="mt-4">
+                            <a href="{% url 'departments:dte_add' %}" 
+                               class="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
+                                DTEを追加
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 統計情報とアクション -->
+        <div class="space-y-6">
+            <!-- 統計カード -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">統計情報</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <span class="ml-3 text-sm font-medium text-gray-700">総社員数</span>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-900">{{ department.employees.count }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
+                                </svg>
+                            </div>
+                            <span class="ml-3 text-sm font-medium text-gray-700">DTE数</span>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-900">{{ department.dtes.count }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <span class="ml-3 text-sm font-medium text-gray-700">アクティブDTE</span>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-900">{{ department.dtes.count }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- クイックアクション -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">クイックアクション</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'employees:employee_list' %}?department={{ department.pk }}" 
+                       class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-150">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">社員一覧を見る</p>
+                            <p class="text-sm text-gray-500">この部署の全社員</p>
+                        </div>
+                        <div class="ml-auto">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="{% url 'departments:dte_list' %}?department={{ department.pk }}" 
+                       class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-150">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">DTE管理</p>
+                            <p class="text-sm text-gray-500">DTE一覧・編集</p>
+                        </div>
+                        <div class="ml-auto">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 部署情報 -->
+            {% if department.description %}
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">部署について</h3>
+                <p class="text-sm text-gray-700 leading-relaxed">{{ department.description }}</p>
             </div>
             {% endif %}
         </div>
-
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">DTEs in this Department</h2>
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-            <ul class="divide-y divide-gray-200">
-                {% for dte in department.dtes.all %}
-                    <li class="px-4 py-4 sm:px-6">
-                        <span class="text-lg font-medium text-gray-900">{{ dte.name }} ({{ dte.code }})</span>
-                    </li>
-                {% empty %}
-                    <li class="px-4 py-4 sm:px-6 text-gray-500">No DTEs found for this department.</li>
-                {% endfor %}
-            </ul>
-        </div>
     </div>
+</div>
 {% endblock %}
