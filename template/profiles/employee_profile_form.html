@@ -1,16 +1,312 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    {% if form.instance.pk %}Edit Profile{% else %}Create Profile{% endif %}
+    {% if form.instance.pk %}プロフィール編集{% else %}プロフィール作成{% endif %} - MyMoE
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2 class="my-4">{% if form.instance.pk %}Edit Profile{% else %}Create Profile{% endif %}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Save Profile</button>
-    </form>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'profiles:my_profile_detail' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    マイプロフィール
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{% if form.instance.pk %}編集{% else %}新規作成{% endif %}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">
+            {% if form.instance.pk %}プロフィールを編集{% else %}プロフィールを作成{% endif %}
+        </h1>
+        <p class="mt-2 text-sm text-gray-600">
+            {% if form.instance.pk %}
+                個人情報やスキルを更新してください
+            {% else %}
+                あなたのプロフィール情報を入力してください
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">基本情報</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    プロフィール情報を入力してください。必要に応じて後から変更できます。
+                </p>
+            </div>
+
+            <div class="px-6 py-6 space-y-6">
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.phone_number.label }}
+                    </label>
+                    <input type="tel" 
+                           id="{{ form.phone_number.id_for_label }}" 
+                           name="{{ form.phone_number.name }}" 
+                           value="{{ form.phone_number.value|default:'' }}"
+                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                           placeholder="例: 090-1234-5678">
+                    {% if form.phone_number.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">{{ form.phone_number.help_text }}</p>
+                    {% endif %}
+                    {% if form.phone_number.errors %}
+                    <div class="mt-2">
+                        {% for error in form.phone_number.errors %}
+                        <p class="text-sm text-red-600 flex items-center">
+                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.date_of_birth.label }}
+                    </label>
+                    <input type="date" 
+                           id="{{ form.date_of_birth.id_for_label }}" 
+                           name="{{ form.date_of_birth.name }}" 
+                           value="{{ form.date_of_birth.value|date:'Y-m-d'|default:'' }}"
+                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                    {% if form.date_of_birth.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">{{ form.date_of_birth.help_text }}</p>
+                    {% endif %}
+                    {% if form.date_of_birth.errors %}
+                    <div class="mt-2">
+                        {% for error in form.date_of_birth.errors %}
+                        <p class="text-sm text-red-600 flex items-center">
+                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.bio.label }}
+                    </label>
+                    <textarea id="{{ form.bio.id_for_label }}" 
+                              name="{{ form.bio.name }}" 
+                              rows="4"
+                              class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                              placeholder="自己紹介や担当業務、趣味などを自由に記入してください...">{{ form.bio.value|default:'' }}</textarea>
+                    {% if form.bio.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">{{ form.bio.help_text }}</p>
+                    {% endif %}
+                    {% if form.bio.errors %}
+                    <div class="mt-2">
+                        {% for error in form.bio.errors %}
+                        <p class="text-sm text-red-600 flex items-center">
+                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="skill-input" class="block text-sm font-medium text-gray-700 mb-2">スキル</label>
+                    <div class="relative">
+                        <input type="text" 
+                               id="skill-input" 
+                               list="skill-suggestions" 
+                               class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                               placeholder="スキルを入力してEnterキーを押してください">
+                        <datalist id="skill-suggestions"></datalist>
+                    </div>
+                    {% if form.skills.errors %}
+                    <div class="mt-2">
+                        {% for error in form.skills.errors %}
+                        <p class="text-sm text-red-600 flex items-center">
+                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- 選択されたスキルタグ -->
+                <div id="selected-skills" class="flex flex-wrap gap-2 min-h-[2rem]">
+                    <!-- スキルタグがここに動的に追加される -->
+                </div>
+
+                <!-- 隠しフィールド -->
+                <div id="skills-hidden-container" class="hidden">
+                    {{ form.skills }}
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
+                <div class="flex space-x-3">
+                    <a href="{% url 'profiles:my_profile_detail' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        キャンセル
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {% if form.instance.pk %}更新する{% else %}作成する{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+{{ initial_skill_ids|json_script:"initial-skills" }}
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const skillInput = document.getElementById('skill-input');
+    const skillSuggestions = document.getElementById('skill-suggestions');
+    const selectedSkillsContainer = document.getElementById('selected-skills');
+    const skillsHiddenContainer = document.getElementById('skills-hidden-container');
+
+    let allSkills = [];
+    let selectedSkillIds = new Set();
+
+    // 初期表示時に既存のスキルをタグとして表示
+    function initializeSkills() {
+        const initialSkillIds = JSON.parse(document.getElementById('initial-skills').textContent);
+        if (initialSkillIds && initialSkillIds.length > 0) {
+            // 全スキルリストを取得してからタグを追加
+            fetch(`/profiles/api/skills/search/`)
+                .then(response => response.json())
+                .then(data => {
+                    allSkills = data;
+                    initialSkillIds.forEach(skillId => {
+                        const skill = allSkills.find(s => s.id === skillId);
+                        if (skill) {
+                            addSkillTag(skill.name, skill.id);
+                        }
+                    });
+                });
+        } else {
+            // 全スキルリストを事前に取得
+            fetch(`/profiles/api/skills/search/`)
+                .then(response => response.json())
+                .then(data => {
+                    allSkills = data;
+                });
+        }
+    }
+
+    // スキル検索とサジェスト表示
+    skillInput.addEventListener('input', function() {
+        const query = skillInput.value;
+        if (query.length < 1) {
+            skillSuggestions.innerHTML = '';
+            return;
+        }
+
+        fetch(`/profiles/api/skills/search/?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                allSkills = data;
+                skillSuggestions.innerHTML = '';
+                data.forEach(skill => {
+                    const option = document.createElement('option');
+                    option.value = skill.name;
+                    option.dataset.id = skill.id;
+                    skillSuggestions.appendChild(option);
+                });
+            });
+    });
+
+    skillInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const skillName = skillInput.value.trim();
+            
+            if (!skillName) return;
+            
+            const skill = allSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase());
+
+            if (skill) {
+                addSkillTag(skill.name, skill.id);
+                skillInput.value = '';
+                skillSuggestions.innerHTML = '';
+            }
+        }
+    });
+
+    // スキルタグを追加する関数
+    function addSkillTag(name, id) {
+        if (selectedSkillIds.has(id)) return;
+
+        selectedSkillIds.add(id);
+
+        const tag = document.createElement('span');
+        tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = name;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-primary-200 focus:outline-none focus:bg-primary-200 transition-colors';
+        removeBtn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        removeBtn.setAttribute('aria-label', 'スキルを削除');
+        removeBtn.onclick = function() {
+            selectedSkillIds.delete(id);
+            tag.remove();
+            updateHiddenInput();
+        };
+
+        tag.appendChild(nameSpan);
+        tag.appendChild(removeBtn);
+        selectedSkillsContainer.appendChild(tag);
+        updateHiddenInput();
+    }
+
+    // 隠しフィールドを更新する関数
+    function updateHiddenInput() {
+        // コンテナの中を空にする
+        skillsHiddenContainer.innerHTML = '';
+
+        // 選択されたIDごとに新しいhidden inputを作成してコンテナに追加する
+        selectedSkillIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'skills';
+            input.value = id;
+            skillsHiddenContainer.appendChild(input);
+        });
+    }
+
+    initializeSkills();
+});
+</script>
 {% endblock %}

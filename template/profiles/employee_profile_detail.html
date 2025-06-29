@@ -221,6 +221,22 @@
         </div>
     </div>
     {% endif %}
+
+    <!-- スキル -->
+    {% if profile.skills.all %}
+    <div class="mt-6 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">スキル</h3>
+            <div class="flex flex-wrap gap-2">
+                {% for skill in profile.skills.all %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                    {{ skill.name }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 {% if request.user.is_hr %}

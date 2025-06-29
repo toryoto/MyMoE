@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    EmployeeProfileCreateView, MyProfileDetailView, EmployeeProfileUpdateView, EmployeeProfileDetailView, UpdateEmployeeOrgInfoView, GetDTEsForDepartmentView
+    EmployeeProfileCreateView, MyProfileDetailView, EmployeeProfileUpdateView, EmployeeProfileDetailView, UpdateEmployeeOrgInfoView, GetDTEsForDepartmentView, SkillSearchView
 )
 
 app_name = 'profiles'
@@ -12,4 +12,5 @@ urlpatterns = [
     path('<int:pk>/', EmployeeProfileDetailView.as_view(), name='employee_profile_detail'),
     path('update-org-info/<int:pk>/', UpdateEmployeeOrgInfoView.as_view(), name='update_org_info'),
     path('get-dtes/<int:department_id>/', GetDTEsForDepartmentView.as_view(), name='get_dtes_for_department'),
+    path('api/skills/search/', SkillSearchView.as_view(), name='skill_search'),
 ]
