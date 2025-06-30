@@ -15,17 +15,17 @@ class EmployeeProfile(models.Model):
     department = models.CharField(max_length=100)
     dte = models.CharField(max_length=100)
     ML_CHOICES = [
-        ('1','SMD'),
-        ('2-4','Managing Director'),
-        ('5','Associate Director'),
-        ('6','Senior Manager'),
-        ('7','Manager'),
-        ('8','Associate Manager'),
-        ('9','Team Lead/Consultant'),
-        ('10','Sonior Analyst'),
-        ('11','Analyst'),
-        ('12','Associate'),
-        ('13','New Associate')
+        ('1','1：SMD'),
+        ('2-4','2：Managing Director'),
+        ('5','3：Associate Director'),
+        ('6','4：Senior Manager'),
+        ('7','5：Manager'),
+        ('8','6：Associate Manager'),
+        ('9','7：Team Lead/Consultant'),
+        ('10','8：Senior Analyst'),
+        ('11','9：Analyst'),
+        ('12','10：Associate'),
+        ('13','11：New Associate')
     ]
     ml = models.CharField(max_length=50,choices= ML_CHOICES ,default='11')
     mail_address = models.CharField(max_length=100)

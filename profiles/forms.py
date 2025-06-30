@@ -16,6 +16,9 @@ class EmployeeProfileForm(forms.ModelForm):
             'is_manager', 'is_hr',
             'phone_number', 'date_of_birth', 'bio', 'skills',
         ]
+        labels = {
+            'ml': 'ML',
+        }
         widgets = {
              'ml': forms.DateInput(attrs={'type': 'date'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
