@@ -18,8 +18,8 @@ class EmployeeProfile(models.Model):
     mail_address = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     statement_id = models.CharField(max_length=10)
-    is_manager = models.BooleanField()
-    is_hr = models.BooleanField()
+    is_manager = models.BooleanField(default=False)
+    is_hr = models.BooleanField(default=False)
 
     # ✅ 追加：電話番号
     phone_number = models.CharField(max_length=20, blank=True, null=True)
