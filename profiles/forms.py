@@ -12,12 +12,11 @@ class EmployeeProfileForm(forms.ModelForm):
         model = EmployeeProfile
         fields = [
             'enterprise_id', 'name', 'department', 'dte',
-            'ml', 'mail_address', 'birth_day', 'statement_id',
+            'ml', 'mail_address', 'statement_id',
             'is_manager', 'is_hr',
             'phone_number', 'date_of_birth', 'bio', 'skills',
         ]
         widgets = {
              'ml': forms.DateInput(attrs={'type': 'date'}),
-            'birth_day': forms.DateInput(attrs={'type': 'date'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
