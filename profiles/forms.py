@@ -17,5 +17,5 @@ class EmployeeProfileForm(forms.ModelForm):
 
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
-            'photo': ClearableFileInput(attrs={'template_name': 'your_app/custom_clearable_file_input.html'}),
+            'photo': ClearableFileInput(),
         }
