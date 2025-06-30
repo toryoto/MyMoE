@@ -10,7 +10,14 @@ class EmployeeProfileForm(forms.ModelForm):
 
     class Meta:
         model = EmployeeProfile
-        fields = ['phone_number', 'date_of_birth', 'bio', 'skills']
+        fields = [
+            'enterprise_id', 'name', 'department', 'dte',
+            'ml', 'mail_address', 'birth_day', 'statement_id',
+            'is_manager', 'is_hr',
+            'phone_number', 'date_of_birth', 'bio', 'skills',
+        ]
         widgets = {
+             'ml': forms.DateInput(attrs={'type': 'date'}),
+            'birth_day': forms.DateInput(attrs={'type': 'date'}),
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
