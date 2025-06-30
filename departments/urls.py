@@ -14,4 +14,5 @@ urlpatterns = [
     path('dtes/add/', views.DTECreateView.as_view(), name='dte_add'),
     path('dtes/<int:pk>/edit/', views.DTEUpdateView.as_view(), name='dte_edit'),
     path('dtes/<int:pk>/delete/', views.DTEDeleteView.as_view(), name='dte_delete'),
+    path('api/departments/<int:department_id>/dtes/', views.dtes_by_department, name='dtes_by_department'),
 ]

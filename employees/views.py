@@ -151,7 +151,7 @@ class CSVBulkImportView(HRRequiredMixin, View):
             request.session['csv_validation_data'] = validation_result['data']
             
             # プレビュー画面にリダイレクト
-            return redirect('csv_preview')
+            return redirect('employees:csv_preview')
         
         return render(request, self.template_name, {'form': form})
 
@@ -197,7 +197,7 @@ class CSVPreviewView(HRRequiredMixin, View):
         # 結果をセッションに保存
         request.session['import_result'] = result
         
-        return redirect('csv_result')
+        return redirect('employees:csv_result')
 
 # Step 3: 実際のインポート実行
 class CSVResultView(HRRequiredMixin, View):
