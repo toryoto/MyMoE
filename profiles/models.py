@@ -29,7 +29,7 @@ class EmployeeProfile(models.Model):
     ]
     ml = models.CharField(max_length=50,choices= ML_CHOICES ,default='11')
     mail_address = models.CharField(max_length=100)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True,blank=True)
     statement_id = models.CharField(max_length=10)
     is_manager = models.BooleanField(default=False)
     is_hr = models.BooleanField(default=False)
