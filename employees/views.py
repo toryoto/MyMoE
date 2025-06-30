@@ -63,7 +63,7 @@ class ForcePasswordChangeView(LoginRequiredMixin, View):
 
 def signup(request):
     if request.method == 'POST':
-        form = EmployeeCreationForm(request.POST)
+        form = EmployeeCreationForm(request.POST) 
         if form.is_valid():
             user = form.save()
             login(request, user)
