@@ -99,7 +99,7 @@
                         </div>
                         
                         <!-- ログアウトボタン -->
-                        <form action="{% url 'logout' %}" method="post" class="inline">
+                        <form action="{% url 'employees:logout' %}" method="post" class="inline">
                             {% csrf_token %}
                             <button type="submit" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                 ログアウト
@@ -107,10 +107,10 @@
                         </form>
                     {% else %}
                         <!-- 未認証時のボタン -->
-                        <a href="{% url 'login' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        <a href="{% url 'home' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
                             ログイン
                         </a>
-                        <a href="{% url 'signup' %}" class="text-primary-600 hover:text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        <a href="{% url 'employees:signup' %}" class="text-primary-600 hover:text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
                             新規登録
                         </a>
                     {% endif %}
