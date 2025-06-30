@@ -13,6 +13,10 @@ from .models import Employee
 from .forms import CSVUploadForm
 from .utils.csv_processor import CSVProcessor
 from django.db.models import Q
+# CSV関連
+from django.http import FileResponse
+import os
+from django.conf import settings
 
 def mymoe_home(request):
     if not request.user.is_authenticated:
@@ -190,3 +194,11 @@ class EmployeeListView(ListView):
         context = super().get_context_data(**kwargs)
         context['q'] = self.request.GET.get('q', '')
         return context
+
+def download_sample_csv(request):
+    file_path = os.path.join(settings.BASE_DIR, 'docs', 'sample_employees_list.csv')
+    if os.path.exists(file_path):
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename='sample_employees_list.csv')
+    else:
+        messages.error(request, "サンプルCSVファイルが見つかりません。")
+        return redirect('csv_bulk_import')

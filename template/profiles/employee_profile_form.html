@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     {% if form.instance.pk %}プロフィール編集{% else %}プロフィール作成{% endif %} - MyMoE
 {% endblock %}
 
 {% block content %}
+
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -41,7 +43,7 @@
     </div>
 
     <div class="bg-white shadow rounded-lg">
-        <form method="post" class="space-y-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             
             <div class="px-6 py-4 border-b border-gray-200">
@@ -52,15 +54,42 @@
             </div>
 
             <div class="px-6 py-6 space-y-6">
+                <!-- プロフィール写真 -->
                 <div>
-                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ form.phone_number.label }}
-                    </label>
-                    <input type="tel" 
+                    <label class="block text-sm font-medium text-gray-700 mb-2">プロフィール写真</label>
+                    <div class="mt-1 flex items-center">
+                        <div class="flex-shrink-0 mr-4">
+                            {% if form.instance.photo %}
+                                <img id="photo-preview" src="{{ form.instance.photo.url }}" alt="プロフィール写真" class="h-20 w-20 rounded-full object-cover border border-gray-300">
+                            {% else %}
+                                <img id="photo-preview" src="{% static 'images/default_profile.png' %}" alt="デフォルトプロフィール写真" class="h-20 w-20 rounded-full object-cover border border-gray-300">
+                            {% endif %}
+                        </div>
+                        <label for="{{ form.photo.id_for_label }}" class="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            変更
+                            <input id="{{ form.photo.id_for_label }}" name="{{ form.photo.name }}" type="file" class="sr-only">
+                        </label>
+                        {% if form.photo.value %}
+                            <button type="button" id="clear-photo" class="ml-3 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-red-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                削除
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% if form.photo.errors %}
+                        <div class="mt-2 text-sm text-red-600">{{ form.photo.errors }}</div>
+                    {% endif %}
+                </div>
+                    
+
+                    <div class="mb-4">
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.phone_number.label }}
+                        </label>
+                        <input type="tel" 
                            id="{{ form.phone_number.id_for_label }}" 
                            name="{{ form.phone_number.name }}" 
                            value="{{ form.phone_number.value|default:'' }}"
-                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2"
                            placeholder="例: 090-1234-5678">
                     {% if form.phone_number.help_text %}
                     <p class="mt-2 text-sm text-gray-500">{{ form.phone_number.help_text }}</p>
@@ -87,7 +116,7 @@
                            id="{{ form.date_of_birth.id_for_label }}" 
                            name="{{ form.date_of_birth.name }}" 
                            value="{{ form.date_of_birth.value|date:'Y-m-d'|default:'' }}"
-                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2">
                     {% if form.date_of_birth.help_text %}
                     <p class="mt-2 text-sm text-gray-500">{{ form.date_of_birth.help_text }}</p>
                     {% endif %}
@@ -112,7 +141,7 @@
                     <textarea id="{{ form.bio.id_for_label }}" 
                               name="{{ form.bio.name }}" 
                               rows="4"
-                              class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                              class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2"
                               placeholder="自己紹介や担当業務、趣味などを自由に記入してください...">{{ form.bio.value|default:'' }}</textarea>
                     {% if form.bio.help_text %}
                     <p class="mt-2 text-sm text-gray-500">{{ form.bio.help_text }}</p>
@@ -137,7 +166,7 @@
                         <input type="text" 
                                id="skill-input" 
                                list="skill-suggestions" 
-                               class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                               class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2"
                                placeholder="スキルを入力してEnterキーを押してください">
                         <datalist id="skill-suggestions"></datalist>
                     </div>
@@ -183,6 +212,7 @@
             </div>
         </form>
     </div>
+
 </div>
 
 {{ initial_skill_ids|json_script:"initial-skills" }}
@@ -193,6 +223,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const skillSuggestions = document.getElementById('skill-suggestions');
     const selectedSkillsContainer = document.getElementById('selected-skills');
     const skillsHiddenContainer = document.getElementById('skills-hidden-container');
+    const photoInput = document.getElementById('id_photo');
+    const photoPreview = document.getElementById('photo-preview');
+    const clearPhotoButton = document.getElementById('clear-photo');
 
     let allSkills = [];
     let selectedSkillIds = new Set();
@@ -303,6 +336,34 @@ document.addEventListener('DOMContentLoaded', function() {
             input.name = 'skills';
             input.value = id;
             skillsHiddenContainer.appendChild(input);
+        });
+    }
+
+    // 写真プレビュー機能
+    if (photoInput) {
+        photoInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 写真削除機能
+    if (clearPhotoButton) {
+        clearPhotoButton.addEventListener('click', function() {
+            photoInput.value = ''; // ファイル選択をクリア
+            photoPreview.src = '{% static "images/default_profile.png" %}'; // デフォルト画像に戻す
+            // DjangoのClearableFileInputが生成するhidden inputを操作してクリアを伝える
+            const clearCheckbox = document.getElementById('photo-clear_id');
+            if (clearCheckbox) {
+                clearCheckbox.checked = true;
+            }
+            clearPhotoButton.style.display = 'none'; // 削除ボタンを非表示にする
         });
     }
 

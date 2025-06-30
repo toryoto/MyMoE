@@ -12,6 +12,7 @@ class EmployeeProfile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
+    photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True) 
     skills = models.ManyToManyField(Skill, blank=True)
 
     def __str__(self):
