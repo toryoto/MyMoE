@@ -8,11 +8,15 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from django.db.models import Q
+from django.http import JsonResponse
+
 from .forms import EmployeeCreationForm
 from .models import Employee
 from .forms import CSVUploadForm
 from .utils.csv_processor import CSVProcessor
-from django.db.models import Q
+from departments.models import Department, DTE
+from profiles.models import Skill, EmployeeProfile
 # CSV関連
 from django.http import FileResponse
 import os
@@ -61,7 +65,7 @@ class ForcePasswordChangeView(LoginRequiredMixin, View):
             
             # セッションを更新（再ログイン不要）
             update_session_auth_hash(request, user)
-            messages.success(request, 'パスワードが正常に変更されました。MyMoEへようこそ！')
+            messages.success(request, 'パスワードが正常に変更されました。MyMoEへようeso！')
             return redirect('mymoe_home')
         
         return render(request, self.template_name, {'form': form})
@@ -82,6 +86,40 @@ class EmployeeListView(ListView):
     template_name = 'employees/employee_list.html'
     context_object_name = 'employees'
     paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        search_query = self.request.GET.get('search_query')
+        department_id = self.request.GET.get('department')
+        dte_id = self.request.GET.get('dte')
+        skill_names = self.request.GET.get('skills')
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(username__icontains=search_query) |
+                Q(email__icontains=search_query)
+            )
+        if department_id:
+            queryset = queryset.filter(department__id=department_id)
+        if dte_id:
+            queryset = queryset.filter(dte__id=dte_id)
+        if skill_names:
+            # スキル名でフィルタリング
+            # EmployeeProfileを介してSkillを検索
+            queryset = queryset.filter(employeeprofile__skills__name__icontains=skill_names)
+            
+        return queryset.distinct() # 重複を除去
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['departments'] = Department.objects.all()
+        context['dtes'] = DTE.objects.all()
+        context['current_search_query'] = self.request.GET.get('search_query', '')
+        context['current_department'] = self.request.GET.get('department', '')
+        context['current_dte'] = self.request.GET.get('dte', '')
+        context['current_skills'] = self.request.GET.get('skills', '')
+        return context
 
 class HRRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -173,27 +211,6 @@ class CSVResultView(HRRequiredMixin, View):
             return redirect('csv_bulk_import')
         
         return render(request, self.template_name, {'result': result})
-    
-class EmployeeListView(ListView):
-    model = Employee
-    template_name = 'employees/employee_list.html'
-    context_object_name = 'employees'
-    paginate_by = 10
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        query = self.request.GET.get('q')
-        if query:
-            queryset = queryset.filter(
-                Q(username__icontains=query) |
-                Q(email__icontains=query)
-            )
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['q'] = self.request.GET.get('q', '')
-        return context
 
 def download_sample_csv(request):
     file_path = os.path.join(settings.BASE_DIR, 'docs', 'sample_employees_list.csv')
