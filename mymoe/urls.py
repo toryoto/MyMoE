@@ -3,6 +3,8 @@ from django.urls import path, include
 from django.shortcuts import render, redirect
 from employees.views import mymoe_home
 from departments.views import dtes_by_department
+from django.conf import settings
+from django.conf.urls.static import static
 
 def index(request):
     if request.user.is_authenticated:
@@ -20,3 +22,6 @@ urlpatterns = [
     path('', index, name='home'),
     path('hr/', include(('employees.urls', 'employees'), namespace='hr')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
