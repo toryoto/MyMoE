@@ -17,3 +17,17 @@ class EmployeeProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+    
+
+class PreEmploymentHistory(models.Model):
+    employee = models.ForeignKey('EmployeeProfile', on_delete=models.CASCADE, related_name='pre_employment_histories')
+    company_name = models.CharField(max_length=100)
+    job_title = models.CharField(max_length=100)
+    job_role = models.CharField(max_length=100)
+    job_description = models.TextField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.company_name} - {self.job_title}"
+

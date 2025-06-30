@@ -243,6 +243,66 @@
         </div>
     </div>
     {% endif %}
+    
+    <!-- 入社前の経歴 -->
+    <div class="mt-6 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                <svg class="inline-block mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 00-2 2H8a2 2 0 00-2-2V6m8 0h2.5A1.5 1.5 0 0119 7.5V20a2 2 0 01-2 2H7a2 2 0 01-2-2V7.5A1.5 1.5 0 016.5 6H9"></path>
+                </svg>
+                入社前の経歴
+            </h3>
+            
+            {% if profile.pre_employment_histories.all %}
+                <div class="space-y-4">
+                    {% for history in profile.pre_employment_histories.all %}
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-gray-900">{{ history.company_name }}</h4>
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        {{ history.start_date|date:"Y年m月" }}〜
+                                        {% if history.end_date %}
+                                            {{ history.end_date|date:"Y年m月" }}
+                                        {% else %}
+                                            現在
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="ml-4 text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ history.job_role|default:"職種不明" }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">役職</dt>
+                                    <dd class="text-sm text-gray-900">{{ history.job_title|default:"未記入" }}</dd>
+                                </div>
+                            </div>
+                            
+                            {% if history.job_description %}
+                            <div class="mt-3">
+                                <dt class="text-sm font-medium text-gray-500">概要</dt>
+                                <dd class="mt-1 text-sm text-gray-700">{{ history.job_description|linebreaksbr }}</dd>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-500">入社前の経歴が登録されていません。</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
 </div>
 
