@@ -69,7 +69,7 @@
                         <a href="{% url 'mymoe_home' %}" class="text-gray-900 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             ダッシュボード
                         </a>
-                        <a href="{% url 'profiles:my_profile_detail' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             プロフィール
                         </a>
                         <a href="{% url 'departments:department_list' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
