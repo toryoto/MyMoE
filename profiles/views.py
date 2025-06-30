@@ -121,3 +121,56 @@ class GetDTEsForDepartmentView(LoginRequiredMixin, View):
     def get(self, request, department_id):
         dtes = DTE.objects.filter(department_id=department_id, is_active=True).values('id', 'name')
         return JsonResponse(list(dtes), safe=False)
+
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import get_template
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from xhtml2pdf.default import DEFAULT_FONT
+from profiles.models import EmployeeProfile
+import os
+import io
+from django.conf import settings
+
+class EmployeeProfilePDFView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        profile = get_object_or_404(EmployeeProfile, pk=pk)
+        template_path = 'profile_pdf.html'
+        context = {'profile': profile}
+
+        # テンプレートをHTMLに変換
+        template = get_template(template_path)
+        html = template.render(context)
+
+        # フォントファイルのパス（.ttf形式）
+        font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'NotoSansJP-Regular.ttf')
+        DEFAULT_FONT['Noto Sans JP'] = font_path
+
+        # xhtml2pdfにフォントを直接登録するための埋め込みCSSを作成
+        font_css = f"""
+        <style>
+        @font-face {{
+            font-family: "Noto Sans JP";
+            src: url("file://{font_path}");
+        }}
+        body {{
+            font-family: "Noto Sans JP";
+        }}
+        </style>
+        """
+
+        # CSSをHTMLに埋め込む
+        html_with_font = font_css + html
+
+        # PDF生成
+        result = io.BytesIO()
+        pdf = pisa.pisaDocument(io.StringIO(html_with_font), dest=result)
+
+        if not pdf.err:
+            response = HttpResponse(result.getvalue(), content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="profile_{pk}.pdf"'
+            return response
+        else:
+            return HttpResponse('PDF作成中にエラーが発生しました。', status=500)
