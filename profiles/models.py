@@ -14,7 +14,7 @@ class EmployeeProfile(models.Model):
     name = models.CharField(max_length=100)
     department = models.CharField(max_length=100)
     dte = models.CharField(max_length=100)
-    ml = models.DateField()
+    ml = models.IntegerField()
     mail_address = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     statement_id = models.CharField(max_length=10)
