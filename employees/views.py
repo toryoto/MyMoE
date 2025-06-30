@@ -12,6 +12,7 @@ from .forms import EmployeeCreationForm
 from .models import Employee
 from .forms import CSVUploadForm
 from .utils.csv_processor import CSVProcessor
+from django.db.models import Q
 
 def mymoe_home(request):
     if not request.user.is_authenticated:
@@ -168,3 +169,24 @@ class CSVResultView(HRRequiredMixin, View):
             return redirect('csv_bulk_import')
         
         return render(request, self.template_name, {'result': result})
+    
+class EmployeeListView(ListView):
+    model = Employee
+    template_name = 'employees/employee_list.html'
+    context_object_name = 'employees'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(username__icontains=query) |
+                Q(email__icontains=query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['q'] = self.request.GET.get('q', '')
+        return context
