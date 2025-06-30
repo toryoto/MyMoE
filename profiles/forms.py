@@ -14,5 +14,3 @@ class EmployeeProfileForm(forms.ModelForm):
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }
-
-
