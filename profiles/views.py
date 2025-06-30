@@ -207,7 +207,3 @@ class EmployeeProfilePDFView(LoginRequiredMixin, View):
             return response
         else:
             return HttpResponse('PDF作成中にエラーが発生しました。', status=500)
-            return JsonResponse({
-                'status': 'error',
-                'message': f'更新に失敗しました: {str(e)}'
-            }, status=500)
