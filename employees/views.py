@@ -93,7 +93,7 @@ class EmployeeListView(ListView):
         search_query = self.request.GET.get('search_query')
         department_id = self.request.GET.get('department')
         dte_id = self.request.GET.get('dte')
-        skill_names = self.request.GET.get('skills') # カンマ区切りでスキル名が来ることを想定
+        skill_names = self.request.GET.get('skills')
 
         if search_query:
             queryset = queryset.filter(
