@@ -1,5 +1,6 @@
 from django import forms
 from .models import EmployeeProfile, Skill
+from django.forms import ClearableFileInput
 
 class EmployeeProfileForm(forms.ModelForm):
     skills = forms.ModelMultipleChoiceField(
@@ -16,4 +17,5 @@ class EmployeeProfileForm(forms.ModelForm):
 
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'photo': ClearableFileInput(attrs={'template_name': 'your_app/custom_clearable_file_input.html'}),
         }
