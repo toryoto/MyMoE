@@ -2,14 +2,23 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import EmployeeProfile, Skill
-from .forms import EmployeeProfileForm
-from django.http import JsonResponse
+from .models import EmployeeProfile, Skill, PreEmploymentHistory
+from .forms import EmployeeProfileForm, PreEmploymentHistoryFormSet, PreEmploymentHistoryForm
+from django.http import JsonResponse,HttpResponseForbidden, HttpResponse
 from django.views import View
 from employees.models import Employee
 from departments.models import Department, DTE
 import json
 from django.template.loader import render_to_string
+# pdf
+from xhtml2pdf import pisa
+from xhtml2pdf.default import DEFAULT_FONT
+from django.template.loader import get_template
+import os
+import io
+from django.conf import settings
+
+
 
 class SkillSearchView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -27,27 +36,23 @@ class EmployeeProfileCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['history_formset'] = PreEmploymentHistoryFormSet(self.request.POST, self.request.FILES, prefix='history')
+        else:
+            context['history_formset'] = PreEmploymentHistoryFormSet(prefix='history')
         context['initial_skill_ids'] = []
         return context
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super().form_valid(form)
-
-class MyProfileDetailView(LoginRequiredMixin, DetailView):
-    model = EmployeeProfile
-    template_name = 'profiles/employee_profile_detail.html'
-    context_object_name = 'profile'
-
-    def dispatch(self, request, *args, **kwargs):
-        # プロフィールが存在しない場合は作成ページにリダイレクト
-        profile, created = EmployeeProfile.objects.get_or_create(user=request.user)
-        if created:
-            return redirect('profiles:my_profile_update')
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        return get_object_or_404(EmployeeProfile, user=self.request.user)
+        self.object = form.save()
+        history_formset = PreEmploymentHistoryFormSet(self.request.POST, self.request.FILES, instance=self.object, prefix='history')
+        if history_formset.is_valid():
+            history_formset.instance = self.object
+            history_formset.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
 class EmployeeProfileDetailView(LoginRequiredMixin, DetailView):
     model = EmployeeProfile
@@ -55,7 +60,12 @@ class EmployeeProfileDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'profile'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(EmployeeProfile, pk=self.kwargs.get('pk'))
+        pk = self.kwargs.get('pk')
+        # 自分のプロフィールの場合は自動作成
+        if pk == self.request.user.pk:
+            profile, created = EmployeeProfile.objects.get_or_create(user=self.request.user)
+            return profile
+        return get_object_or_404(EmployeeProfile, pk=pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,53 +77,88 @@ class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
     model = EmployeeProfile
     form_class = EmployeeProfileForm
     template_name = 'profiles/employee_profile_form.html'
-    success_url = reverse_lazy('profiles:my_profile_detail')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # テンプレートに渡すために、現在のスキルIDのリストを作成
-        context['initial_skill_ids'] = list(self.object.skills.values_list('id', flat=True))
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        # プロフィールが存在しない場合は作成(employees/signals.pyで自動作成されているが、念の為)
-        profile, created = EmployeeProfile.objects.get_or_create(user=request.user)
-        if created:
-            # 新規作成の場合は、オブジェクトをセットしてからUpdateViewの処理を継続
-            self.kwargs['pk'] = profile.pk
-        
-        return super().dispatch(request, *args, **kwargs)
-
+    
     def get_object(self, queryset=None):
-        # URLのpkではなく、常にログインユーザーのプロフィールを返す
-        return get_object_or_404(EmployeeProfile, user=self.request.user)
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(EmployeeProfile, user_id=pk)
+    
+    def get_success_url(self):
+        return reverse_lazy('profiles:employee_profile_detail', kwargs={'pk': self.object.user.pk})
 
     def test_func(self):
+        # 自分のプロフィールのみ編集可能
         profile = self.get_object()
         return self.request.user == profile.user
 
-class UpdateEmployeeOrgInfoView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        if not request.user.is_hr:
-            return JsonResponse({'status': 'error', 'message': 'Permission denied.'}, status=403)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['history_formset'] = PreEmploymentHistoryFormSet(self.request.POST, self.request.FILES, instance=self.object, prefix='history')
+        else:
+            context['history_formset'] = PreEmploymentHistoryFormSet(instance=self.object, prefix='history')
+        context['initial_skill_ids'] = list(self.object.skills.values_list('id', flat=True))
+        return context
 
+    def form_valid(self, form):
+        history_formset = PreEmploymentHistoryFormSet(self.request.POST, self.request.FILES, instance=self.object, prefix='history')
+        if form.is_valid() and history_formset.is_valid():
+            self.object = form.save()
+            history_formset.instance = self.object
+            history_formset.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+    
+class UpdateEmployeeOrgInfoView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_hr
+    
+    def post(self, request, employee_id):
         try:
-            employee = get_object_or_404(Employee, pk=pk)
             data = json.loads(request.body)
+            employee = get_object_or_404(Employee, id=employee_id)
+            
             department_id = data.get('department_id')
             dte_id = data.get('dte_id')
-
-            department = get_object_or_404(Department, id=department_id) if department_id else None
-            dte = get_object_or_404(DTE, id=dte_id) if dte_id else None
-
-            employee.department = department
-            employee.dte = dte
-            employee.clean()
+            
+            # 部署を更新
+            if department_id:
+                department = get_object_or_404(Department, id=department_id)
+                employee.department = department
+            else:
+                employee.department = None
+            
+            # DTEを更新
+            if dte_id:
+                dte = get_object_or_404(DTE, id=dte_id)
+                # DTEが選択した部署に属しているかチェック
+                if employee.department and dte.department != employee.department:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': '選択したDTEは選択した部署に属していません'
+                    }, status=400)
+                employee.dte = dte
+            else:
+                employee.dte = None
+            
             employee.save()
-
-            html = render_to_string('components/user_org_info.html', {'employee': employee})
-
-            return JsonResponse({'status': 'success', 'message': 'Organization info updated.', 'html': html})
+            
+            # 更新された組織情報のHTMLを生成
+            html = render_to_string('components/user_org_info.html', {
+                'employee': employee
+            })
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': '組織情報が更新されました',
+                'html': html
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': '無効なリクエストデータです'
+            }, status=400)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
@@ -121,18 +166,6 @@ class GetDTEsForDepartmentView(LoginRequiredMixin, View):
     def get(self, request, department_id):
         dtes = DTE.objects.filter(department_id=department_id, is_active=True).values('id', 'name')
         return JsonResponse(list(dtes), safe=False)
-
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.template.loader import get_template
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from xhtml2pdf import pisa
-from xhtml2pdf.default import DEFAULT_FONT
-from profiles.models import EmployeeProfile
-import os
-import io
-from django.conf import settings
 
 class EmployeeProfilePDFView(LoginRequiredMixin, View):
     def get(self, request, pk):
@@ -174,3 +207,7 @@ class EmployeeProfilePDFView(LoginRequiredMixin, View):
             return response
         else:
             return HttpResponse('PDF作成中にエラーが発生しました。', status=500)
+            return JsonResponse({
+                'status': 'error',
+                'message': f'更新に失敗しました: {str(e)}'
+            }, status=500)
