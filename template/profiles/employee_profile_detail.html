@@ -18,6 +18,8 @@
                         </div>
                     </div>
                     <!-- 基本情報 -->
+                     <!-- エンタープライズID -->
+                    <p class="text-sm text-gray-500">ID: {{ profile.enterprise_id }}</p>
                     <div class="mt-4 sm:mt-0 sm:ml-6">
                         <div class="flex items-center">
                             <h1 class="text-2xl font-bold text-gray-900">
@@ -160,8 +162,8 @@
                             <svg class="flex-shrink-0 mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            <a href="mailto:{{ profile.user.email }}" class="text-primary-600 hover:text-primary-500">
-                                {{ profile.user.email }}
+                            <a href="mailto:{{ profile.mail_address }}" class="text-primary-600 hover:text-primary-500">
+                                {{ profile.mail_address }}
                             </a>
                         </dd>
                     </div>
@@ -181,34 +183,64 @@
         </div>
 
         <!-- 個人情報 -->
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">個人情報</h3>
-                <dl class="space-y-4">
-                    {% if profile.date_of_birth %}
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">生年月日</dt>
-                        <dd class="mt-1 text-sm text-gray-900 flex items-center">
-                            <svg class="flex-shrink-0 mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {{ profile.date_of_birth|date:"Y年m月d日" }}
-                        </dd>
-                    </div>
-                    {% endif %}
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">参加日</dt>
-                        <dd class="mt-1 text-sm text-gray-900 flex items-center">
-                            <svg class="flex-shrink-0 mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {{ profile.user.date_joined|date:"Y年m月d日" }}
-                        </dd>
-                    </div>
-                </dl>
+       <!-- 個人情報 -->
+<div class="bg-white shadow rounded-lg">
+    <div class="px-6 py-5 sm:p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">個人情報</h3>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            {% if profile.date_of_birth %}
+            <div class="flex flex-col">
+                <dt class="text-sm text-gray-500">生年月日</dt>
+                <dd class="mt-1 text-sm text-gray-900 flex items-center">
+                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {{ profile.date_of_birth|date:"Y年m月d日" }}
+                </dd>
             </div>
-        </div>
+            {% endif %}
+
+            {% if profile.statement_id %}
+            <div class="flex flex-col">
+                <dt class="text-sm text-gray-500">社員番号</dt>
+                <dd class="mt-1 text-sm text-gray-900 flex items-center">
+                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 12h6m-3 -3v6m9 -6a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ profile.statement_id }}
+                </dd>
+            </div>
+            {% endif %}
+
+            {% if profile.ml %}
+            <div class="flex flex-col">
+                <dt class="text-sm text-gray-500">メールアドレス</dt>
+                <dd class="mt-1 text-sm text-gray-900 flex items-center break-all">
+                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    {{ profile.ml }}
+                </dd>
+            </div>
+            {% endif %}
+
+            <div class="flex flex-col">
+                <dt class="text-sm text-gray-500">参加日</dt>
+                <dd class="mt-1 text-sm text-gray-900 flex items-center">
+                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ profile.user.date_joined|date:"Y年m月d日" }}
+                </dd>
+            </div>
+        </dl>
     </div>
+</div>
+
 
     <!-- 自己紹介 -->
     {% if profile.bio %}
