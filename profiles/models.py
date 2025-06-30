@@ -16,10 +16,13 @@ class EmployeeProfile(models.Model):
     dte = models.CharField(max_length=100)
     ml = models.DateField()
     mail_address = models.CharField(max_length=100)
-    birth_day = models.DateField()
+    date_of_birth = models.DateField()
     statement_id = models.CharField(max_length=10)
     is_manager = models.BooleanField()
     is_hr = models.BooleanField()
+
+    # ✅ 追加：電話番号
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     # 既存項目
     bio = models.TextField(blank=True, null=True)
