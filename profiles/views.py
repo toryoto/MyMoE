@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import EmployeeProfile, Skill, PreEmploymentHistory
-from .forms import EmployeeProfileForm, PreEmploymentHistoryFormSet, PreEmploymentHistoryForm
-from django.http import JsonResponse,HttpResponseForbidden, HttpResponse
+from .models import EmployeeProfile, Skill
+from .forms import EmployeeProfileForm, PreEmploymentHistoryFormSet
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 from employees.models import Employee
 from departments.models import Department, DTE
