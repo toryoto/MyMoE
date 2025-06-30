@@ -37,7 +37,7 @@ class CustomLoginView(LoginView):
         
         # 初回ログインチェック
         if getattr(user, 'force_password_change', False):
-            return redirect('force_password_change')
+            return redirect('employees:force_password_change')
         
         return response
     

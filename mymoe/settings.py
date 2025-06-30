@@ -127,6 +127,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'employees.Employee'
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/mymoe/'
 LOGOUT_REDIRECT_URL = '/'
 

@@ -1,15 +1,223 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - MyMoE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="overflow-hidden">
+<!-- Full screen animated background -->
+<div class="fixed inset-0 bg-pink overflow-hidden">
+  <!-- Floating geometric shapes across entire screen -->
+  <div class="absolute inset-0 pointer-events-none">
+    <!-- Circles -->
+    <div class="absolute top-10 left-20 w-12 h-12 bg-lavenderblush rounded-full opacity-60 animate-pulse"></div>
+    <div class="absolute top-1/4 right-24 w-8 h-8 bg-white rounded-full opacity-50 animate-pulse delay-1000"></div>
+    <div class="absolute top-1/2 left-1/4 w-6 h-6 bg-mistyrose rounded-full opacity-80 animate-ping"></div>
+    <div class="absolute bottom-1/4 right-1/3 w-14 h-14 bg-lavenderblush rounded-full opacity-40 animate-pulse delay-700"></div>
+    <div class="absolute bottom-20 left-1/3 w-10 h-10 bg-white rounded-full opacity-60 animate-pulse delay-500"></div>
+    <div class="absolute top-1/3 left-1/2 w-8 h-8 bg-mistyrose rounded-full opacity-70 animate-ping delay-300"></div>
+    
+    <!-- Squares -->
+    <div class="absolute top-32 right-32 w-12 h-12 bg-mistyrose opacity-70 animate-bounce"></div>
+    <div class="absolute top-2/3 left-16 w-8 h-8 bg-white opacity-40 animate-bounce delay-500"></div>
+    <div class="absolute bottom-40 right-1/4 w-10 h-10 bg-lavenderblush opacity-60 animate-bounce delay-300"></div>
+    <div class="absolute top-1/5 left-1/3 w-6 h-6 bg-mistyrose opacity-80 animate-bounce delay-1000"></div>
+  </div>
+</div>
 
-{% block content %}
-  <h1>トップページ</h1>
+<!-- Main content over background -->
+<div class="relative z-10 h-screen w-full flex">
+  <!-- Left side - Brand section -->
+  <div class="flex-1 flex items-center justify-end p-4 pr-8 lg:pr-12">
+    <div class="text-center text-white relative z-20">
+      <h1 class="text-4xl sm:text-5xl font-bold mb-4" style="font-family: 'Comic Sans MS', 'Marker Felt', cursive, sans-serif; letter-spacing: 2px;">
+        <span class="bounce-letter" style="animation-delay: 0s;">M</span><span class="bounce-letter" style="animation-delay: 0.1s;">y</span><span class="bounce-letter" style="animation-delay: 0.2s;">&nbsp;</span><span class="bounce-letter" style="animation-delay: 0.3s;">M</span><span class="bounce-letter" style="animation-delay: 0.4s;">O</span><span class="bounce-letter" style="animation-delay: 0.5s;">E</span>
+      </h1>
+      <p class="text-lg sm:text-xl font-light opacity-90">My Management Of Employee</p>
+    </div>
+  </div>
 
-  {% if user.is_authenticated %}
-    <p>Welcome, {{ user.username }}!</p>
-    <a href="{% url 'logout' %}">Logout</a>
-    <p>You are logged in. Go to <a href="{% url 'mymoe_home' %}">MyMoe Page</a></p>
-  {% else %}
-    <p>You are not logged in.</p>
-    <a href="{% url 'login' %}">Login</a>
-    <a href="{% url 'signup' %}">Sign Up</a>
-  {% endif %}
-{% endblock %}
+  <!-- Right side - Login form -->
+  <div class="flex-1 flex items-center justify-start p-4 pl-8 lg:pl-12">
+    <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-1">Login</h2>
+        <p class="text-sm text-gray-600">Enterprise IDとパスワードを入力してください。</p>
+      </div>
+
+      <!-- Error messages (simplified) -->
+      <div id="error-message" class="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 hidden">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-4 w-4 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-2">
+            <h3 class="text-xs font-medium text-red-800">ログインに失敗しました</h3>
+          </div>
+        </div>
+      </div>
+
+      <form class="space-y-4" method="post">
+        {% csrf_token %}
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+            Enterprise ID:
+          </label>
+          <input 
+            id="username" 
+            name="username" 
+            type="text" 
+            required 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink focus:border-pink transition-colors duration-200 text-sm" 
+            placeholder="Enterprise IDを入力">
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+            Password:
+          </label>
+          <input 
+            id="password" 
+            name="password" 
+            type="password" 
+            required 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink focus:border-pink transition-colors duration-200 text-sm" 
+            placeholder="パスワードを入力">
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <button 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-pink-400 to-pink-500 text-white font-medium py-2.5 px-4 rounded-lg hover:from-pink-500 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transform hover:scale-[1.02] transition-all duration-200 shadow-lg text-sm">
+            Login
+          </button>
+          
+          <a 
+            href="#" 
+            class="w-full bg-white text-gray-700 font-medium py-2.5 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 inline-block text-center no-underline text-sm">
+            Sign up
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+:root {
+  --pink: #FFC0CB;
+  --lavenderblush: #FFF0F5;
+  --mistyrose: #FFE4E1;
+}
+
+/* Modern Gothic font family for all text except title */
+body, input, button, label, p, h2, h3 {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Verdana', 'Arial', sans-serif;
+}
+
+.bg-pink { background-color: var(--pink); }
+.bg-lavenderblush { background-color: var(--lavenderblush); }
+.bg-mistyrose { background-color: var(--mistyrose); }
+.focus\:ring-pink:focus { --tw-ring-color: var(--pink); }
+.focus\:border-pink:focus { border-color: var(--pink); }
+
+/* Bouncing letters animation for "My MOE" with 3s pause after sequence */
+@keyframes bounceLetters {
+  0% { transform: translateY(0); }
+  5% { transform: translateY(-15px); }
+  10% { transform: translateY(-8px); }
+  15%, 100% { transform: translateY(0); }
+}
+
+.bounce-letter {
+  display: inline-block;
+  animation: bounceLetters 6s ease-in-out infinite;
+}
+
+/* Floating animation for geometric shapes with smaller movement */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(90deg); }
+  50% { transform: translateY(-8px) rotate(180deg); }
+  75% { transform: translateY(-20px) rotate(270deg); }
+}
+
+/* Apply enhanced floating animation to all geometric shapes */
+.absolute.top-10.left-20 { animation: float 6s ease-in-out infinite; }
+.absolute.top-1\/4.right-24 { animation: float 8s ease-in-out infinite reverse; }
+.absolute.top-1\/2.left-1\/4 { animation: float 7s ease-in-out infinite; }
+.absolute.bottom-1\/4.right-1\/3 { animation: float 9s ease-in-out infinite reverse; }
+.absolute.bottom-20.left-1\/3 { animation: float 5s ease-in-out infinite; }
+.absolute.top-1\/3.left-1\/2 { animation: float 6.5s ease-in-out infinite reverse; }
+.absolute.top-32.right-32 { animation: float 7.5s ease-in-out infinite reverse; }
+.absolute.top-2\/3.left-16 { animation: float 5.5s ease-in-out infinite; }
+.absolute.bottom-40.right-1\/4 { animation: float 9.5s ease-in-out infinite reverse; }
+.absolute.top-1\/5.left-1\/3 { animation: float 6.8s ease-in-out infinite; }
+
+/* スクロール防止 */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* モバイル対応の調整 */
+@media (max-width: 768px) {
+  .h-screen.flex {
+    flex-direction: column;
+  }
+  
+  .flex-1:first-child {
+    flex: 0 0 35%;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+    justify-content: center !important;
+  }
+  
+  .flex-1:last-child {
+    flex: 0 0 65%;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    justify-content: center !important;
+  }
+  
+  /* モバイルでは一部の浮遊要素を非表示 */
+  .absolute.bottom-40.right-1\/4,
+  .absolute.top-1\/5.left-1\/3 {
+    display: none;
+  }
+}
+
+/* 高さが低い画面での調整 */
+@media (max-height: 600px) {
+  .flex-1:first-child h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .flex-1:first-child p {
+    font-size: 1rem;
+  }
+  
+  .max-w-sm {
+    max-width: 18rem;
+  }
+  
+  .p-6 {
+    padding: 1rem;
+  }
+  
+  .mb-6 {
+    margin-bottom: 1rem;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 0.75rem;
+  }
+}
+</style>
+</body>
+</html>

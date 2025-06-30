@@ -9,14 +9,14 @@ class ForcePasswordChangeMiddleware:
     def __call__(self, request):
         if request.user.is_authenticated and getattr(request.user, 'force_password_change', False):
             allowed_paths = [
-                reverse('force_password_change'),
-                reverse('logout'),
+                reverse('employees:force_password_change'),
+                reverse('employees:logout'),
             ]
             
             # 現在のパスが許可されたパスに含まれていない場合、パスワード変更ページへリダイレクト
             # Django Adminサイトへのアクセスも許可する
             if request.path not in allowed_paths and not request.path.startswith('/admin/'):
-                return redirect('force_password_change')
+                return redirect('employees:force_password_change')
         
         response = self.get_response(request)
         return response

@@ -3,7 +3,6 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('login/', views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('signup/', views.signup, name='signup'),
     path('force-password-change/',views.ForcePasswordChangeView.as_view(), name='force_password_change'),
