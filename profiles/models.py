@@ -9,10 +9,21 @@ class Skill(models.Model):
 
 class EmployeeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    date_of_birth = models.DateField(blank=True, null=True)
+
+    enterprise_id = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    department = models.CharField(max_length=100)
+    dte = models.CharField(max_length=100)
+    ml = models.DateField()
+    mail_address = models.CharField(max_length=100)
+    birth_day = models.DateField()
+    statement_id = models.CharField(max_length=10)
+    is_manager = models.BooleanField()
+    is_hr = models.BooleanField()
+
+    # 既存項目
     bio = models.TextField(blank=True, null=True)
-    skills = models.ManyToManyField(Skill, blank=True)
+    skills = models.ManyToManyField('Skill', blank=True)
 
     def __str__(self):
-        return f"{self.user.username}'s Profile"
+        return f"{self.enterprise_id} - {self.name}"
