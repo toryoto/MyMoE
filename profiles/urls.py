@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 
-from .views import (
+from profiles.views import (
     EmployeeProfileUpdateView, EmployeeProfileDetailView, 
     SkillSearchView, UpdateEmployeeOrgInfoView, EmployeeProfilePDFView
 )
