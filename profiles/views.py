@@ -45,28 +45,18 @@ class EmployeeProfileCreateView(LoginRequiredMixin, CreateView):
         else:
             return self.render_to_response(self.get_context_data(form=form))
 
-class MyProfileDetailView(LoginRequiredMixin, DetailView):
-    model = EmployeeProfile
-    template_name = 'profiles/employee_profile_detail.html'
-    context_object_name = 'profile'
-
-    def dispatch(self, request, *args, **kwargs):
-        # プロフィールが存在しない場合は作成ページにリダイレクト
-        profile, created = EmployeeProfile.objects.get_or_create(user=request.user)
-        if created:
-            return redirect('profiles:my_profile_update')
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        return get_object_or_404(EmployeeProfile, user=self.request.user)
-
 class EmployeeProfileDetailView(LoginRequiredMixin, DetailView):
     model = EmployeeProfile
     template_name = 'profiles/employee_profile_detail.html'
     context_object_name = 'profile'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(EmployeeProfile, pk=self.kwargs.get('pk'))
+        pk = self.kwargs.get('pk')
+        # 自分のプロフィールの場合は自動作成
+        if pk == self.request.user.pk:
+            profile, created = EmployeeProfile.objects.get_or_create(user=self.request.user)
+            return profile
+        return get_object_or_404(EmployeeProfile, pk=pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,10 +68,18 @@ class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
     model = EmployeeProfile
     form_class = EmployeeProfileForm
     template_name = 'profiles/employee_profile_form.html'
-    success_url = reverse_lazy('profiles:my_profile_detail')
-
+    
     def get_object(self, queryset=None):
-        return get_object_or_404(EmployeeProfile, user=self.request.user)
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(EmployeeProfile, user_id=pk)
+    
+    def get_success_url(self):
+        return reverse_lazy('profiles:employee_profile_detail', kwargs={'pk': self.object.user.pk})
+
+    def test_func(self):
+        # 自分のプロフィールのみ編集可能
+        profile = self.get_object()
+        return self.request.user == profile.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,7 +87,6 @@ class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
             context['history_formset'] = PreEmploymentHistoryFormSet(self.request.POST, self.request.FILES, instance=self.object, prefix='history')
         else:
             context['history_formset'] = PreEmploymentHistoryFormSet(instance=self.object, prefix='history')
-
         context['initial_skill_ids'] = list(self.object.skills.values_list('id', flat=True))
         return context
 
@@ -102,8 +99,59 @@ class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateV
             return redirect(self.get_success_url())
         else:
             return self.render_to_response(self.get_context_data(form=form))
-
+    
+class UpdateEmployeeOrgInfoView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
-        profile = self.get_object()
-        return self.request.user == profile.user
-
+        return self.request.user.is_hr
+    
+    def post(self, request, employee_id):
+        try:
+            data = json.loads(request.body)
+            employee = get_object_or_404(Employee, id=employee_id)
+            
+            department_id = data.get('department_id')
+            dte_id = data.get('dte_id')
+            
+            # 部署を更新
+            if department_id:
+                department = get_object_or_404(Department, id=department_id)
+                employee.department = department
+            else:
+                employee.department = None
+            
+            # DTEを更新
+            if dte_id:
+                dte = get_object_or_404(DTE, id=dte_id)
+                # DTEが選択した部署に属しているかチェック
+                if employee.department and dte.department != employee.department:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': '選択したDTEは選択した部署に属していません'
+                    }, status=400)
+                employee.dte = dte
+            else:
+                employee.dte = None
+            
+            employee.save()
+            
+            # 更新された組織情報のHTMLを生成
+            html = render_to_string('components/user_org_info.html', {
+                'employee': employee
+            })
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': '組織情報が更新されました',
+                'html': html
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': '無効なリクエストデータです'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': f'更新に失敗しました: {str(e)}'
+            }, status=500)
