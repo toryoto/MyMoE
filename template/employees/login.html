@@ -31,7 +31,9 @@
   <!-- Left side - Brand section -->
   <div class="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12">
     <div class="text-center text-white relative z-20">
-      <h1 class="text-4xl sm:text-5xl font-bold mb-4" style="font-family: 'Comic Sans MS', 'Marker Felt', cursive, sans-serif; letter-spacing: 2px;">My MOE</h1>
+      <h1 class="text-4xl sm:text-5xl font-bold mb-4" style="font-family: 'Comic Sans MS', 'Marker Felt', cursive, sans-serif; letter-spacing: 2px;">
+        <span class="bounce-letter" style="animation-delay: 0s;">M</span><span class="bounce-letter" style="animation-delay: 0.1s;">y</span><span class="bounce-letter" style="animation-delay: 0.2s;">&nbsp;</span><span class="bounce-letter" style="animation-delay: 0.3s;">M</span><span class="bounce-letter" style="animation-delay: 0.4s;">O</span><span class="bounce-letter" style="animation-delay: 0.5s;">E</span>
+      </h1>
       <p class="text-lg sm:text-xl font-light opacity-90">My Management Of Employee</p>
     </div>
   </div>
@@ -107,6 +109,7 @@
             class="w-full bg-white text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 inline-block text-center no-underline">
             Sign up
           </a>
+
         </div>
       </form>
     </div>
@@ -121,11 +124,29 @@
   --mistyrose: #FFE4E1;
 }
 
+/* Modern Gothic font family for all text except title */
+body, input, button, label, p, h2, h3 {
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'Verdana', 'Arial', sans-serif;
+}
+
 .bg-pink { background-color: var(--pink); }
 .bg-lavenderblush { background-color: var(--lavenderblush); }
 .bg-mistyrose { background-color: var(--mistyrose); }
 .focus\:ring-pink:focus { --tw-ring-color: var(--pink); }
 .focus\:border-pink:focus { border-color: var(--pink); }
+
+/* Bouncing letters animation for "My MOE" with 3s pause after sequence */
+@keyframes bounceLetters {
+  0% { transform: translateY(0); }
+  5% { transform: translateY(-15px); }
+  10% { transform: translateY(-8px); }
+  15%, 100% { transform: translateY(0); }
+}
+
+.bounce-letter {
+  display: inline-block;
+  animation: bounceLetters 6s ease-in-out infinite;
+}
 
 /* Floating animation for geometric shapes with larger movement */
 @keyframes float {
