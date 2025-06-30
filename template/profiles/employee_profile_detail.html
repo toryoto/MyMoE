@@ -224,6 +224,21 @@
                     {{ profile.user.date_joined|date:"Y年m月d日" }}
                 </dd>
             </div>
+
+            {% if profile.ml %}
+            <div class="flex flex-col">
+                <dt class="text-sm text-gray-500">ML</dt>
+                <dd class="mt-1 text-sm text-gray-900 flex items-center">
+                    <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                             d="M16 7a4 4 0 00-8 0v4a4 4 0 008 0V7zM12 17h.01" />
+                    </svg>
+                    {{ profile.get_ml_display }}
+                </dd>
+            </div>
+            {% endif %}
+
+            
         </dl>
     </div>
 </div>
