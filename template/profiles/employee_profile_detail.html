@@ -3,25 +3,7 @@
 {% block title %}{{ profile.user.get_full_name|default:profile.user.username }}のプロフィール - MyMoE{% endblock %}
 
 {% block content %}
-<!-- <<<<<<< HEAD
-<div class="container">
-    <h2 class="my-4">My Profile</h2>
-    <div class="profile-photo">
-        {% load static %}
-        {% if profile.photo %}
-            <img src="{{ profile.photo.url }}" alt="Profile Photo" class="img-thumbnail" style="max-width: 200px;">
-        {% else %}
-            <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Photo" class="img-thumbnail" style="max-width: 200px;">
-        {% endif %}
-    </div>
-    <p><strong>Username:</strong> {{ profile.user.username }}</p>
-    <p><strong>Email:</strong> {{ profile.user.email }}</p>
-    <p><strong>Phone Number:</strong> {{ profile.phone_number|default:"N/A" }}</p>
-    <p><strong>Date of Birth:</strong> {{ profile.date_of_birth|default:"N/A" }}</p>
-    <p><strong>Bio:</strong> {{ profile.bio|default:"N/A" }}</p>
-    <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
-    <a href="{% url 'mymoe_home' %}" class="btn btn-secondary">Back to Home</a>
-======= -->
+
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- プロフィールヘッダー -->
     <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
