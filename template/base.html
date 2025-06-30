@@ -14,10 +14,35 @@
                     },
                     colors: {
                         primary: {
-                            50: '#eff6ff',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
+                            50: '#fdf2f8',  // mistyrose/lavenderblush tone
+                            100: '#fce7f3', // light pink
+                            200: '#fbcfe8', // soft pink
+                            300: '#f9a8d4', // medium pink
+                            400: '#f472b6', // bright pink
+                            500: '#ec4899', // main pink
+                            600: '#db2777', // darker pink
+                            700: '#be185d', // deep pink
+                            800: '#9d174d', // very deep pink
+                            900: '#831843', // darkest pink
+                        },
+                        accent: {
+                            50: '#fef7ff',  // lavenderblush
+                            100: '#faf0fe', // very light lavender
+                            200: '#f3e8ff', // light lavender
+                            300: '#e9d5ff', // medium lavender
+                            400: '#d8b4fe', // bright lavender
+                            500: '#c084fc', // main lavender
+                            600: '#a855f7', // darker lavender
+                            700: '#9333ea', // deep lavender
+                        },
+                        rose: {
+                            50: '#fff5f5',  // mistyrose tone
+                            100: '#fed7d7', // light rose
+                            200: '#feb2b2', // soft rose
+                            300: '#fc8181', // medium rose
+                            400: '#f56565', // bright rose
+                            500: '#e53e3e', // main rose
+                            600: '#c53030', // darker rose
                         }
                     }
                 }
@@ -25,9 +50,9 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-primary-50 min-h-screen flex flex-col">
     <!-- ナビゲーションバー -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="bg-white shadow-sm border-b border-primary-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <!-- ロゴ・ブランド -->
@@ -79,7 +104,7 @@
                         <!-- ログアウトボタン -->
                         <form action="{% url 'logout' %}" method="post" class="inline">
                             {% csrf_token %}
-                            <button type="submit" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <button type="submit" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                 ログアウト
                             </button>
                         </form>
@@ -104,7 +129,7 @@
     </main>
 
     <!-- フッター -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
+    <footer class="bg-white border-t border-primary-200 mt-auto">
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <p class="text-center text-sm text-gray-500">
                 &copy; 2025 MyMoE. All rights reserved.
