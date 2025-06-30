@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}社員一括登録 - MyMoE{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ブレッドクラム -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'mymoe_home' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    ダッシュボード
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">社員一括登録</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ヘッダー -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">社員一括登録</h1>
+        <p class="mt-2 text-sm text-gray-600">CSVファイルを使用して複数の社員を一度に登録できます</p>
+    </div>
+
+    <!-- ステップインジケーター -->
+    <div class="mb-8">
+        <nav aria-label="Progress">
+            <ol class="flex items-center">
+                <li class="relative pr-8 sm:pr-20">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="h-0.5 w-full bg-gray-200"></div>
+                    </div>
+                    <div class="relative flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
+                        <span class="text-white text-sm font-medium">1</span>
+                    </div>
+                    <span class="mt-2 block text-xs font-medium text-primary-600">アップロード</span>
+                </li>
+                <li class="relative pr-8 sm:pr-20">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="h-0.5 w-full bg-gray-200"></div>
+                    </div>
+                    <div class="relative flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
+                        <span class="text-gray-500 text-sm font-medium">2</span>
+                    </div>
+                    <span class="mt-2 block text-xs font-medium text-gray-500">プレビュー</span>
+                </li>
+                <li class="relative">
+                    <div class="relative flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
+                        <span class="text-gray-500 text-sm font-medium">3</span>
+                    </div>
+                    <span class="mt-2 block text-xs font-medium text-gray-500">完了</span>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- CSVアップロードフォーム -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">CSVファイルをアップロード</h3>
+            <p class="mt-1 text-sm text-gray-500">社員情報が記載されたCSVファイルを選択してください</p>
+        </div>
+
+        <div class="px-6 py-6">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- ファイル選択 -->
+                <div>
+                    <label for="{{ form.csv_file.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.csv_file.label }}
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-primary-400 transition-colors">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="{{ form.csv_file.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                                    {{ form.csv_file }}
+                                </label>
+                                <p class="pl-1">またはドラッグ&ドロップ</p>
+                            </div>
+                            <p class="text-xs text-gray-500">CSV形式、最大5MB</p>
+                        </div>
+                    </div>
+                    {% if form.csv_file.help_text %}
+                    <p class="mt-2 text-sm text-gray-500">{{ form.csv_file.help_text }}</p>
+                    {% endif %}
+                    {% if form.csv_file.errors %}
+                    <div class="mt-2">
+                        {% for error in form.csv_file.errors %}
+                        <p class="text-sm text-red-600 flex items-center">
+                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- アクションボタン -->
+                <div class="flex justify-end space-x-3">
+                    <a href="{% url 'mymoe_home' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        キャンセル
+                    </a>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        アップロード & プレビュー
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- サンプルCSVダウンロード -->
+    <div class="mt-4 text-center">
+        <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            サンプルCSVをダウンロード
+        </button>
+    </div>
+</div>
+
+<script>
+// ファイル選択時の表示更新
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('{{ form.csv_file.id_for_label }}');
+    const fileLabel = fileInput.parentElement.querySelector('span');
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            fileLabel.textContent = this.files[0].name;
+        } else {
+            fileLabel.textContent = 'ファイルを選択';
+        }
+    });
+});
+</script>
+
+{% endblock %}

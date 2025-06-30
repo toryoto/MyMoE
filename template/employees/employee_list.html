@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}社員一覧{% endblock %}
+
+{% block main_classes %}max-w-full{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">社員一覧</h1>
+
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <div class="flex-grow">
+                <label for="search-input" class="sr-only">社員名、メールアドレスなどで検索</label>
+                <input type="text" id="search-input" placeholder="社員名、メールアドレスなどで検索..." class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm p-2.5">
+            </div>
+            <button type="button" class="w-full sm:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                検索
+            </button>
+        </div>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="department-filter" class="block text-sm font-medium text-gray-700">Department</label>
+                <select id="department-filter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                    <option value="">全て</option>
+                </select>
+            </div>
+            <div>
+                <label for="position-filter" class="block text-sm font-medium text-gray-700">DTE</label>
+                <select id="position-filter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                    <option value="">全て</option>
+                </select>
+            </div>
+            <!-- その他のフィルタリングオプション -->
+        </div>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Department
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                DTE
+                            </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">詳細</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for employee in employees %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ employee.username }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ employee.email }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ employee.department.name|default:"未設定" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ employee.dte.name|default:"未設定" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                {% if employee.employeeprofile %}
+                                <a href="{% url 'profiles:employee_profile_detail' employee.employeeprofile.pk %}" class="text-primary-600 hover:text-primary-900">詳細</a>
+                                {% else %}
+                                <span class="text-gray-400">未登録</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                社員情報がありません。
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4" aria-label="Pagination">
+        <div class="flex-1 flex justify-between sm:justify-end">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                前へ
+            </a>
+            {% endif %}
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                次へ
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
