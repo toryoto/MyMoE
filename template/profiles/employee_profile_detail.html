@@ -3,7 +3,7 @@
 {% block title %}{{ profile.user.get_full_name|default:profile.user.username }}のプロフィール - MyMoE{% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
+<!-- <<<<<<< HEAD
 <div class="container">
     <h2 class="my-4">My Profile</h2>
     <div class="profile-photo">
@@ -21,7 +21,7 @@
     <p><strong>Bio:</strong> {{ profile.bio|default:"N/A" }}</p>
     <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
     <a href="{% url 'mymoe_home' %}" class="btn btn-secondary">Back to Home</a>
-=======
+======= -->
 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- プロフィールヘッダー -->
     <div class="bg-white overflow-hidden shadow rounded-lg mb-6">
@@ -256,7 +256,7 @@
         </div>
     </div>
     {% endif %}
->>>>>>> 5e741af3aef103521390df159e7f380789367feb
+
 </div>
 
 {% if request.user.is_hr %}
