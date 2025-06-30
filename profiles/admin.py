@@ -9,30 +9,41 @@ class SkillAdmin(admin.ModelAdmin):
 @admin.register(EmployeeProfile)
 class EmployeeProfileAdmin(admin.ModelAdmin):
     """
-    EmployeeProfile model の管理画面設定
+    EmployeeProfile model の管理画面設定（拡張版）
     """
-    list_display = ('user', 'phone_number', 'date_of_birth')
-    list_filter = ('date_of_birth',)
-    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
-    ordering = ('user__username',)
+    list_display = (
+        'enterprise_id', 'name', 'department', 'dte', 'mail_address',
+        'ml', 'birth_day', 'is_manager', 'is_hr'
+    )
+    list_filter = ('department', 'is_manager', 'is_hr', 'ml')
+    search_fields = (
+        'enterprise_id', 'name', 'department', 'dte',
+        'mail_address', 'statement_id'
+    )
+    ordering = ('enterprise_id',)
     filter_horizontal = ('skills',)
-    
+
     fieldsets = (
         ('基本情報', {
-            'fields': ('user',)
+            'fields': ('user', 'enterprise_id', 'name', 'department', 'dte', 'statement_id')
         }),
-        ('個人情報', {
-            'fields': ('phone_number', 'date_of_birth', 'bio')
+        ('連絡・日付情報', {
+            'fields': ('mail_address', 'phone_number', 'birth_day', 'ml', 'date_of_birth')
+        }),
+        ('権限', {
+            'fields': ('is_manager', 'is_hr')
+        }),
+        ('プロフィール詳細', {
+            'fields': ('bio',)
         }),
         ('スキル', {
             'fields': ('skills',)
         }),
     )
-    
-    # 読み取り専用フィールド
+
     readonly_fields = ('user',)
-    
+
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # 編集時
-            return self.readonly_fields + ('user',)
+        if obj:  # 編集時はuserのみ読み取り専用
+            return self.readonly_fields + ('enterprise_id',)
         return self.readonly_fields
