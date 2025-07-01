@@ -18,9 +18,12 @@ from .utils.csv_processor import CSVProcessor
 from departments.models import Department, DTE
 from profiles.models import Skill, EmployeeProfile
 # CSV関連
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 import os
 from django.conf import settings
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from .models import ML_CHOICES
 
 def mymoe_home(request):
     if not request.user.is_authenticated:
@@ -219,3 +222,27 @@ def download_sample_csv(request):
     else:
         messages.error(request, "サンプルCSVファイルが見つかりません。")
         return redirect('csv_bulk_import')
+
+@login_required
+@require_POST
+def update_ml(request, pk):
+    if not request.user.is_hr:
+        return HttpResponse("権限がありません。", status=403)
+
+    try:
+        employee = Employee.objects.get(pk=pk)
+    except Employee.DoesNotExist:
+        return HttpResponse("社員が見つかりません。", status=404)
+
+    ml_value = request.POST.get('ml')
+
+    # ML_CHOICESから有効な選択肢のリストを作成
+    valid_ml_choices = [choice[0] for choice in ML_CHOICES]
+
+    if ml_value not in valid_ml_choices:
+        return HttpResponse("無効なML値です。", status=400)
+
+    employee.ml = ml_value
+    employee.save()
+
+    return HttpResponse("MLが正常に更新されました。", status=200)
