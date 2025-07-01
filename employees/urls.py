@@ -13,4 +13,5 @@ urlpatterns = [
     path('csv-preview/', views.CSVPreviewView.as_view(), name='csv_preview'),
     path('csv-result/', views.CSVResultView.as_view(), name='csv_result'),
     path('download-sample-csv/', views.download_sample_csv, name='download_sample_csv'),
+    path('update-ml/<int:pk>/', views.update_ml, name='update_ml'),
 ]
