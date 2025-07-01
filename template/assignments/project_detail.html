@@ -304,22 +304,38 @@
 </div>
 {% endblock %}
 
-<!-- CSRFトークン -->
-{{ csrf_token|json_script:"csrf-token" }}
-
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Project detail page loaded');
+    
     const searchInput = document.getElementById('employee-search');
     const searchResults = document.getElementById('employee-search-results');
     const resultsContainer = document.getElementById('search-results-container');
     let searchTimeout;
 
     // CSRFトークンを取得
-    const csrfToken = JSON.parse(document.getElementById('csrf-token').textContent);
+    function getCSRFToken() {
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfInput) {
+            return csrfInput.value;
+        }
+        
+        // Cookieから取得を試行
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        
+        return cookieValue;
+    }
 
     // 社員検索機能
     if (searchInput) {
+        console.log('Search input found, attaching event listener');
+        
         searchInput.addEventListener('input', function() {
+            console.log('Search input triggered:', this.value);
             clearTimeout(searchTimeout);
             const query = this.value.trim();
             
@@ -329,23 +345,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             searchTimeout = setTimeout(() => {
+                console.log('Executing search for:', query);
                 searchEmployees(query);
             }, 300);
         });
+    } else {
+        console.error('Search input not found');
     }
 
     function searchEmployees(query) {
-        fetch(`{% url 'assignments:employee_search' %}?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
+        const url = `{% url 'assignments:employee_search' %}?q=${encodeURIComponent(query)}&project_id={{ project.pk }}`;
+        console.log('Fetching URL:', url);
+        
+        fetch(url)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Search results:', data);
                 displaySearchResults(data);
             })
             .catch(error => {
                 console.error('検索エラー:', error);
+                resultsContainer.innerHTML = '<p class="text-sm text-red-500">検索中にエラーが発生しました。</p>';
+                searchResults.classList.remove('hidden');
             });
     }
 
     function displaySearchResults(employees) {
+        console.log('Displaying results for', employees.length, 'employees');
+        
         if (employees.length === 0) {
             resultsContainer.innerHTML = '<p class="text-sm text-gray-500">該当する社員が見つかりません。</p>';
         } else {
@@ -373,6 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 社員をアサインする関数
     window.assignEmployee = function(employeeId) {
+        console.log('Assigning employee:', employeeId);
+        
         const roleModal = document.createElement('div');
         roleModal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
         roleModal.innerHTML = `
@@ -413,7 +448,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // フォーム送信処理
         document.getElementById('assign-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Submitting assignment form');
+            
             const formData = new FormData(this);
+            const csrfToken = getCSRFToken();
+            
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                alert('セキュリティトークンが見つかりません。ページを再読み込みしてください。');
+                return;
+            }
             
             fetch('{% url "assignments:assignment_create" project.pk %}', {
                 method: 'POST',
@@ -423,15 +467,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .then(response => {
+                console.log('Assignment response status:', response.status);
                 if (response.ok) {
+                    console.log('Assignment successful, reloading page');
                     window.location.reload();
                 } else {
-                    alert('アサインに失敗しました。');
+                    return response.json().then(data => {
+                        throw new Error(data.error || 'アサインに失敗しました。');
+                    });
                 }
             })
             .catch(error => {
                 console.error('アサインエラー:', error);
-                alert('アサインに失敗しました。');
+                alert(error.message || 'アサインに失敗しました。');
             });
         });
         
@@ -442,7 +490,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // アサイン削除関数
     window.removeAssignment = function(assignmentId) {
+        console.log('Removing assignment:', assignmentId);
+        
         if (confirm('このアサインを削除しますか？')) {
+            const csrfToken = getCSRFToken();
+            
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                alert('セキュリティトークンが見つかりません。ページを再読み込みしてください。');
+                return;
+            }
+            
             fetch(`{% url 'assignments:assignment_delete' 0 %}`.replace('0', assignmentId), {
                 method: 'POST',
                 headers: {
@@ -450,17 +508,161 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .then(response => {
+                console.log('Delete response status:', response.status);
                 if (response.ok) {
+                    console.log('Delete successful, reloading page');
                     window.location.reload();
                 } else {
-                    alert('削除に失敗しました。');
+                    return response.json().then(data => {
+                        throw new Error(data.error || '削除に失敗しました。');
+                    });
                 }
             })
             .catch(error => {
                 console.error('削除エラー:', error);
-                alert('削除に失敗しました。');
+                alert(error.message || '削除に失敗しました。');
             });
         }
     };
+    
+    // デバッグ情報
+    console.log('Project ID:', {{ project.pk }});
+    console.log('Can manage assignments:', {{ can_manage_assignments|yesno:"true,false" }});
+    console.log('CSRF token available:', !!getCSRFToken());
 });
+
+// 社員検索機能
+let searchTimeout;
+const employeeSearchInput = document.getElementById('employee-search');
+const searchResultsDiv = document.getElementById('employee-search-results');
+const searchResultsContainer = document.getElementById('search-results-container');
+
+if (employeeSearchInput) {
+    employeeSearchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        clearTimeout(searchTimeout);
+        
+        if (query.length < 2) {
+            searchResultsDiv.classList.add('hidden');
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            fetch(`/assignments/api/employee-search/?q=${encodeURIComponent(query)}&project_id={{ project.pk }}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchResultsContainer.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        searchResultsContainer.innerHTML = '<p class="text-sm text-gray-500">検索結果がありません</p>';
+                    } else {
+                        data.forEach(employee => {
+                            const employeeDiv = document.createElement('div');
+                            employeeDiv.className = 'flex items-center justify-between p-3 bg-white rounded-md border border-gray-200 hover:bg-gray-50';
+                            
+                            const isAssigned = employee.already_assigned;
+                            const buttonClass = isAssigned 
+                                ? 'px-3 py-1 text-xs font-medium text-gray-500 bg-gray-100 rounded-md cursor-not-allowed'
+                                : 'px-3 py-1 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md cursor-pointer';
+                            const buttonText = isAssigned ? 'アサイン済み' : 'アサイン';
+                            
+                            employeeDiv.innerHTML = `
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="h-8 w-8 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 flex items-center justify-center">
+                                            <span class="text-xs font-bold text-white">${employee.name.charAt(0).toUpperCase()}</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">${employee.name}</p>
+                                            <p class="text-xs text-gray-500">@${employee.username}</p>
+                                            ${employee.department ? `<p class="text-xs text-gray-500">${employee.department}</p>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="${isAssigned ? '' : `assignEmployee(${employee.id})`}" class="${buttonClass}" ${isAssigned ? 'disabled' : ''}>
+                                    ${buttonText}
+                                </button>
+                            `;
+                            
+                            searchResultsContainer.appendChild(employeeDiv);
+                        });
+                    }
+                    
+                    searchResultsDiv.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('検索エラー:', error);
+                    searchResultsContainer.innerHTML = '<p class="text-sm text-red-500">検索中にエラーが発生しました</p>';
+                    searchResultsDiv.classList.remove('hidden');
+                });
+        }, 300);
+    });
+}
+
+// 社員アサイン機能
+function assignEmployee(employeeId) {
+    const startDate = prompt('アサイン開始日を入力してください (YYYY-MM-DD形式):', new Date().toISOString().split('T')[0]);
+    if (!startDate) return;
+    
+    const role = prompt('役割を選択してください (leader/member):', 'member');
+    if (!role) return;
+    
+    const endDate = prompt('アサイン終了日を入力してください (YYYY-MM-DD形式、進行中の場合は空白):', '');
+    
+    const formData = new FormData();
+    formData.append('employee_id', employeeId);
+    formData.append('role', role);
+    formData.append('start_date', startDate);
+    if (endDate) {
+        formData.append('end_date', endDate);
+    }
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch(`/assignments/projects/{{ project.pk }}/assign/`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('アサインが完了しました');
+            location.reload();
+        } else {
+            alert('エラー: ' + (data.error || 'アサインに失敗しました'));
+        }
+    })
+    .catch(error => {
+        console.error('アサインエラー:', error);
+        alert('アサインに失敗しました');
+    });
+}
+
+// アサイン削除機能
+function removeAssignment(assignmentId) {
+    if (!confirm('このアサインを削除しますか？')) return;
+    
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch(`/assignments/assignments/${assignmentId}/delete/`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('アサインを削除しました');
+            location.reload();
+        } else {
+            alert('エラー: アサインの削除に失敗しました');
+        }
+    })
+    .catch(error => {
+        console.error('削除エラー:', error);
+        alert('アサインの削除に失敗しました');
+    });
+}
 </script>
+{% csrf_token %}
+{% endblock %}

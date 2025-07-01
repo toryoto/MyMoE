@@ -3,11 +3,11 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q, Count
-from django.contrib import messages
 from django.http import JsonResponse
 from django.views import View
 from django.utils import timezone
 from .models import Client, Project, Assignment
+from django.db import models
 from employees.models import Employee
 
 
@@ -148,7 +148,7 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         can_manage = False
         
         if user.is_authenticated:
-            if user.is_staff or user.is_hr:
+            if user.is_superuser:
                 can_manage = True
             elif self.object.manager and self.object.manager.pk == user.pk:
                 can_manage = True
@@ -278,13 +278,27 @@ class MyAssignmentListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Assignment.objects.filter(
             employee=self.request.user
-        ).select_related('project__client').order_by('-start_date')
+        ).select_related('project__client', 'project__manager').order_by('-start_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 現在進行中のプロジェクト数
-        context['active_assignments'] = self.get_queryset().filter(
-            project__status='active',
-            end_date__isnull=True
+        
+        # 全てのアサインメントを取得
+        all_assignments = self.get_queryset()
+        
+        # 現在進行中のプロジェクト数（プロジェクトのステータスがactiveで、アサインが終了していない）
+        context['active_assignments'] = all_assignments.filter(
+            project__status='active'
+        ).filter(
+            models.Q(end_date__isnull=True) | models.Q(end_date__gt=timezone.now().date())
         ).count()
+        
+        # 完了済みプロジェクト数
+        context['completed_assignments'] = all_assignments.filter(
+            project__status='completed'
+        ).count()
+        
+        # 総プロジェクト数
+        context['total_assignments'] = all_assignments.count()
+        
         return context
