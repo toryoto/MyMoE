@@ -144,11 +144,16 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         context['today'] = timezone.now().date()
         
         # ユーザーがこのプロジェクトのマネージャーまたは管理者かチェック
-        context['can_manage_assignments'] = (
-            self.request.user.is_staff or 
-            self.request.user.is_hr or 
-            self.object.manager == self.request.user
-        )
+        user = self.request.user
+        can_manage = False
+        
+        if user.is_authenticated:
+            if user.is_staff or user.is_hr:
+                can_manage = True
+            elif self.object.manager and self.object.manager.pk == user.pk:
+                can_manage = True
+        
+        context['can_manage_assignments'] = can_manage
         
         return context
 
