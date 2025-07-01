@@ -302,6 +302,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
 <!-- CSRFトークン -->
 {{ csrf_token|json_script:"csrf-token" }}
@@ -463,66 +464,3 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 });
 </script>
-
-{% endblock %}{% extends 'base.html' %}
-
-{% block title %}{{ project.name }} - プロジェクト詳細 - MyMoE{% endblock %}
-
-{% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- ブレッドクラム -->
-    <nav class="flex mb-8" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="{% url 'assignments:project_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
-                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                    </svg>
-                    プロジェクト管理
-                </a>
-            </li>
-            <li>
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ project.name }}</span>
-                </div>
-            </li>
-        </ol>
-    </nav>
-
-    <!-- プロジェクトヘッダー -->
-    <div class="bg-white shadow rounded-lg mb-6">
-        <div class="px-6 py-6">
-            <div class="sm:flex sm:items-center sm:justify-between">
-                <div class="sm:flex sm:items-center">
-                    <div class="flex-shrink-0">
-                        <div class="h-16 w-16 rounded-xl bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
-                            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="mt-4 sm:mt-0 sm:ml-6">
-                        <div class="flex items-center space-x-3">
-                            <h1 class="text-2xl font-bold text-gray-900">{{ project.name }}</h1>
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium {% if project.status == 'active' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
-                                {{ project.get_status_display }}
-                            </span>
-                        </div>
-                        <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
-                            <div class="flex items-center">
-                                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
-                                </svg>
-                                <span class="font-medium">クライアント:</span> {{ project.client.name }}
-                            </div>
-                            {% if project.client.industry %}
-                            <div class="text-gray-500">{{ project.client.get_industry_display }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="mt-2 flex items-center space-x-6 text-sm text-gray-500">
-                            <div class="flex items-center">
-                                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9
