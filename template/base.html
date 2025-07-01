@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyMoE - 社員ポータル{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=M+PLUS+1p:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                    'sans': ['YuGothic', 'Yu Gothic', '游ゴシック体', '游ゴシック', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'Hiragino Kaku Gothic ProN', 'メイリオ', 'Meiryo', 'sans-serif'],
+                    'sans': ['Inter', 'Noto Sans JP', 'M PLUS 1p', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'sans-serif'],
+                    'japanese': ['Noto Sans JP', 'M PLUS 1p', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'sans-serif'],
+                    'modern': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
                     },
                     colors: {
                         primary: {

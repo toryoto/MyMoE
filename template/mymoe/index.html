@@ -7,13 +7,13 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">
-                    おかえりなさい、{{ user.get_full_name|default:user.username }}さん
+                    Welcome back、{{ user.get_full_name|default:user.username }}!
                 </h1>
-                <p class="text-gray-600 mt-1">今日も一日お疲れさまです</p>
+                <p class="text-gray-600 mt-1">Ready for another great day?</p>
             </div>
             <div class="hidden md:block">
                 <div class="text-right text-sm text-gray-500">
-                    <p>最終ログイン</p>
+                    <p>Latest login</p>
                     <p class="font-medium">{{ user.last_login|date:"Y年m月d日 H:i" }}</p>
                 </div>
             </div>
@@ -24,8 +24,8 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="mt-4 flex space-x-2">
-                <a href="{% url 'profiles:my_profile_detail' %}" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
+                <a href="{% url 'profiles:my_profile_detail' %}" class="text-sm bg-indigo-50 text-indigo-600 px-3 py-1 rounded-md hover:bg-indigo-100 transition-colors">
                     表示
                 </a>
                 <a href="{% url 'profiles:my_profile_update' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
@@ -48,8 +48,8 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="mt-4">
-                <a href="{% url 'employees:employee_list' %}" class="text-sm bg-green-50 text-green-600 px-3 py-1 rounded-md hover:bg-green-100 transition-colors">
+                <a href="{% url 'employees:employee_list' %}" class="text-sm bg-emerald-50 text-emerald-600 px-3 py-1 rounded-md hover:bg-emerald-100 transition-colors">
                     検索する
                 </a>
             </div>
@@ -69,8 +69,8 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 opacity-50">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -90,8 +90,8 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 opacity-50">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
@@ -113,8 +113,8 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 bg-sky-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
                         </div>
@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <a href="{% url 'hr:csv_bulk_import' %}" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
+                    <a href="{% url 'hr:csv_bulk_import' %}" class="text-sm bg-sky-50 text-sky-600 px-3 py-1 rounded-md hover:bg-sky-100 transition-colors">
                         開始する
                     </a>
                 </div>
