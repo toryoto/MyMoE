@@ -3,10 +3,11 @@
 {% block title %}ダッシュボード - MyMoE{% endblock %}
 
 {% block content %}
-<div class="h-screen overflow-hidden flex flex-col">
+<!-- Dashboard Container -->
+<div class="dashboard-container">
    <!-- Header Section - Friendly Greeting Design -->
-    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-100 p-6 mb-4 flex-shrink-0">
-        <div class="max-w-6xl mx-auto">
+    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-b border-orange-100 p-6 mb-4">
+        <div class="max-w-6xl mx-auto" style="margin-left: 170px;">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-orange-200 to-amber-200 rounded-full flex items-center justify-center shadow-sm">
@@ -34,37 +35,68 @@
     </div>
 
     <!-- Main Content with left margin to avoid sidebar overlap -->
-    <div style="margin-left: 170px;" class="flex-1 overflow-hidden flex flex-col">
-        <div class="max-w-6xl mx-auto w-full">
+    <div style="margin-left: 0px; padding-right: 20px;">
+        <div class="max-w-6xl mx-auto w-full pb-8">
         
-        <!-- Main Layout: データ(左側) と プロフィール・社員検索・お知らせ(右側) -->
-        <div class="flex gap-4 mb-4 flex-shrink-0">
-            <!-- 左側: データ - ヘッダーセクションの左端と位置を合わせるために拡張 -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 opacity-50" style="flex: 1; margin-left: -170px; padding-left: 175px;">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
+        <!-- Main Layout: 左側（データ・CSV） と 右側（プロフィール・社員検索・お知らせ）-->
+        <div class="flex gap-4 mb-4">
+            <!-- 左側: データとCSV -->
+            <div class="flex flex-col space-y-4" style="flex: 1; height: 200%;">
+                <!-- データ -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 opacity-50" style="flex: 6;">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-base font-medium text-gray-900">データ</h3>
+                            <p class="text-xs text-gray-500">統計・分析</p>
                         </div>
                     </div>
-                    <div class="ml-3">
-                        <h3 class="text-base font-medium text-gray-900">データ</h3>
-                        <p class="text-xs text-gray-500">統計・分析</p>
+                    <div class="mt-3">
+                        <span class="text-xs bg-gray-100 text-gray-400 px-2 py-1 rounded-md">
+                            準備中
+                        </span>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <span class="text-xs bg-gray-100 text-gray-400 px-2 py-1 rounded-md">
-                        準備中
-                    </span>
+
+                <!-- CSV一括登録 (HRセクション) -->
+                {% if user.is_hr %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow" style="flex: 1;">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-8 h-8 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-base font-medium text-gray-900">CSV一括登録</h3>
+                                    <p class="text-xs text-gray-500">複数社員の一括登録</p>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <a href="{% url 'hr:csv_bulk_import' %}" class="inline-flex items-center px-4 py-2 bg-sky-50 text-sky-600 text-xs font-medium rounded-lg hover:bg-sky-100 transition-colors border border-sky-200">
+                                    開始する
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                {% endif %}
             </div>
 
             <!-- 右側: プロフィール・社員検索・お知らせ -->
-            <div class="space-y-4" style="flex: 1;">
+            <div class="flex flex-col space-y-4" style="flex: 1; height: fit-content;">
                 <!-- プロフィール -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow flex-1">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -91,7 +123,7 @@
                 </div>
 
                 <!-- 社員検索 -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow flex-1">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -115,52 +147,29 @@
                 </div>
 
                 <!-- お知らせ -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 flex-1">
                     <h2 class="text-base font-medium text-gray-900 mb-2">お知らせ</h2>
                     <div class="space-y-1">
-                        <div class="p-3 rounded-lg border-l-4 border-orange-200" style="background-color: seashell;">
-                            <h3 class="text-sm font-medium text-orange-700">システムメンテナンス</h3>
-                            <p class="text-xs text-orange-600 mt-1">12/31 23:00-1:00にメンテナンスを実施します</p>
+                        <div class="p-3 bg-white rounded-lg border-l-4 border-amber-600">
+                            <h3 class="text-sm font-medium text-gray-800">システムメンテナンス</h3>
+                            <p class="text-xs text-gray-600 mt-1">12/31 23:00-1:00にメンテナンスを実施します</p>
                         </div>
-                        <div class="p-3 rounded-lg border-l-4 border-orange-200" style="background-color: seashell; opacity: 0.8;">
-                            <h3 class="text-sm font-medium text-orange-700">新機能追加</h3>
-                            <p class="text-xs text-orange-600 mt-1">社員検索機能がリリースされました</p>
+                        <div class="p-3 bg-white rounded-lg border-l-4 border-amber-600">
+                            <h3 class="text-sm font-medium text-gray-800">新機能追加</h3>
+                            <p class="text-xs text-gray-600 mt-1">社員検索機能がリリースされました</p>
                         </div>
-                        <div class="p-3 rounded-lg border-l-4 border-orange-200" style="background-color: seashell;">
-                            <h3 class="text-sm font-medium text-orange-700">プロフィール更新のお願い</h3>
-                            <p class="text-xs text-orange-600 mt-1">最新情報の更新をお願いします</p>
+                        <div class="p-3 bg-white rounded-lg border-l-4 border-amber-600">
+                            <h3 class="text-sm font-medium text-gray-800">プロフィール更新のお願い</h3>
+                            <p class="text-xs text-gray-600 mt-1">最新情報の更新をお願いします</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- HR Section (if applicable) - Fixed Height -->
-        {% if user.is_hr %}
-        <div class="mb-4 flex-shrink-0">
-            <h2 class="text-base font-medium text-gray-900 mb-2">人事管理</h2>
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-8 h-8 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-base font-medium text-gray-900">CSV一括登録</h3>
-                        <p class="text-xs text-gray-500">複数社員の一括登録</p>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <a href="{% url 'hr:csv_bulk_import' %}" class="text-xs bg-sky-50 text-sky-600 px-2 py-1 rounded-md hover:bg-sky-100 transition-colors">
-                        開始する
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+
+
+
         
         </div>
     </div>
