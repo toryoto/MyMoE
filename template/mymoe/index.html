@@ -66,24 +66,27 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 opacity-50">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-medium text-gray-900">MyDE連携</h3>
-                    <p class="text-sm text-gray-500">Daily Report</p>
+                    <h3 class="text-lg font-medium text-gray-900">プロジェクト管理</h3>
+                    <p class="text-sm text-gray-500">プロジェクトとアサイン</p>
                 </div>
             </div>
-            <div class="mt-4">
-                <span class="text-sm bg-gray-100 text-gray-400 px-3 py-1 rounded-md">
-                    準備中
-                </span>
+            <div class="mt-4 flex space-x-2">
+                <a href="{% url 'assignments:project_list' %}" class="text-sm bg-purple-50 text-purple-600 px-3 py-1 rounded-md hover:bg-purple-100 transition-colors">
+                    一覧
+                </a>
+                <a href="{% url 'assignments:my_assignment_list' %}" class="text-sm bg-gray-50 text-gray-600 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors">
+                    自分のアサイン
+                </a>
             </div>
         </div>
 
@@ -146,7 +149,7 @@
             </div>
             <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
                 <h3 class="text-sm font-medium text-green-800">新機能追加</h3>
-                <p class="text-xs text-green-600 mt-1">社員検索機能がリリースされました</p>
+                <p class="text-xs text-green-600 mt-1">プロジェクト管理機能がリリースされました</p>
             </div>
             <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
                 <h3 class="text-sm font-medium text-yellow-800">プロフィール更新のお願い</h3>
