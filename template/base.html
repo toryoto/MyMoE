@@ -67,24 +67,6 @@
                             MyMoE
                         </a>
                     </div>
-                    
-                    <!-- ナビゲーションメニュー（認証後のみ表示） -->
-                    {% if user.is_authenticated %}
-                    <div class="hidden md:ml-10 md:flex md:space-x-8">
-                        <a href="{% url 'mymoe_home' %}" class="text-gray-900 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            ダッシュボード
-                        </a>
-                        <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            プロフィール
-                        </a>
-                        <a href="{% url 'departments:department_list' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            部署
-                        </a>
-                        <a href="{% url 'employees:employee_list' %}" class="text-gray-500 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            社員検索
-                        </a>
-                    </div>
-                    {% endif %}
                 </div>
 
                 <!-- 右側メニュー -->
@@ -107,16 +89,16 @@
                         <form action="{% url 'employees:logout' %}" method="post" class="inline">
                             {% csrf_token %}
                             <button type="submit" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                ログアウト
+                                Logout
                             </button>
                         </form>
                     {% else %}
                         <!-- 未認証時のボタン -->
                         <a href="{% url 'home' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                            ログイン
+                            Login
                         </a>
                         <a href="{% url 'employees:signup' %}" class="text-primary-600 hover:text-primary-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                            新規登録
+                            Sign Up
                         </a>
                     {% endif %}
                 </div>
@@ -124,11 +106,36 @@
         </div>
     </nav>
 
-    <!-- メインコンテンツ -->
-    <main class="flex-grow {% block main_classes %}max-w-7xl mx-auto{% endblock %} py-6 px-4 sm:px-6 lg:px-8">
-        {% block content %}
-        {% endblock %}
-    </main>
+    <!-- コンテンツ領域 -->
+    <div class="flex flex-grow">
+        <!-- サイドバー（認証後のみ表示） -->
+        {% if user.is_authenticated %}
+        <aside class="w-48 bg-primary-500 shadow-lg">
+            <nav class="mt-8">
+                <div class="px-6 space-y-2">
+                    <a href="{% url 'mymoe_home' %}" class="flex items-center px-4 py-3 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium">
+                        Dashboard
+                    </a>
+                    <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="flex items-center px-4 py-3 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium">
+                        My Profile
+                    </a>
+                    <a href="{% url 'departments:department_list' %}" class="flex items-center px-4 py-3 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium">
+                        Departments
+                    </a>
+                    <a href="{% url 'employees:employee_list' %}" class="flex items-center px-4 py-3 text-white hover:bg-primary-600 rounded-lg transition-colors font-medium">
+                        Search Employees
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        {% endif %}
+
+        <!-- メインコンテンツ -->
+        <main class="flex-grow {% block main_classes %}max-w-7xl mx-auto{% endblock %} py-6 px-4 sm:px-6 lg:px-8">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
 
     <!-- フッター -->
     <footer class="bg-white border-t border-primary-200 mt-auto">
