@@ -120,6 +120,27 @@
             <div id="update-status" class="text-sm mt-2"></div>
         </div>
     </div>
+
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="px-6 py-4">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">MLの更新</h3>
+            <div class="flex items-end space-x-4">
+                <div class="flex-1">
+                    <label for="ml-select" class="block text-sm font-medium text-gray-700">ML</label>
+                    <select id="ml-select" name="ml" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                        <option value="">MLを選択</option>
+                        {% for choice in ML_CHOICES %}
+                            <option value="{{ choice.0 }}" {% if profile.user.ml == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button id="update-ml-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    更新
+                </button>
+            </div>
+            <div id="update-ml-status" class="text-sm mt-2"></div>
+        </div>
+    </div>
     {% endif %}
 
     <!-- メインコンテンツ：3カラムレイアウト -->
@@ -266,7 +287,7 @@
 
 {% if request.user.is_hr %}
 {% load static %}
-<script src="{% static 'js/profile_detail.js' %}"></script>
+<script src="{% static 'js/profile_detail.js' %}" data-employee-id="{{ profile.user.pk }}" data-csrf-token="{{ csrf_token }}"></script>
 {% endif %}
 
 <style>
