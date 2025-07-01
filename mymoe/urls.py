@@ -31,8 +31,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('employees/', include(('employees.urls', 'employees'), namespace='employees')),
     path('profiles/', include(('profiles.urls', 'profiles'), namespace='profiles')),
-    path('mymoe/', mymoe_home, name='mymoe_home'),
     path('departments/', include('departments.urls')),
+    path('assignments/', include(('assignments.urls', 'assignments'), namespace='assignments')),
+    path('mymoe/', mymoe_home, name='mymoe_home'),
     path('', index, name='home'),
     path('hr/', include(('employees.urls', 'employees'), namespace='hr')),
 ]
