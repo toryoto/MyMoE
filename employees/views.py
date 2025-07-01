@@ -8,10 +8,19 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
+from django.db.models import Q
+from django.http import JsonResponse
+
 from .forms import EmployeeCreationForm
 from .models import Employee
 from .forms import CSVUploadForm
 from .utils.csv_processor import CSVProcessor
+from departments.models import Department, DTE
+from profiles.models import Skill, EmployeeProfile
+# CSV関連
+from django.http import FileResponse
+import os
+from django.conf import settings
 
 def mymoe_home(request):
     if not request.user.is_authenticated:
@@ -28,7 +37,7 @@ class CustomLoginView(LoginView):
         
         # 初回ログインチェック
         if getattr(user, 'force_password_change', False):
-            return redirect('force_password_change')
+            return redirect('employees:force_password_change')
         
         return response
     
@@ -56,14 +65,14 @@ class ForcePasswordChangeView(LoginRequiredMixin, View):
             
             # セッションを更新（再ログイン不要）
             update_session_auth_hash(request, user)
-            messages.success(request, 'パスワードが正常に変更されました。MyMoEへようこそ！')
+            messages.success(request, 'パスワードが正常に変更されました。MyMoEへようeso！')
             return redirect('mymoe_home')
         
         return render(request, self.template_name, {'form': form})
 
 def signup(request):
     if request.method == 'POST':
-        form = EmployeeCreationForm(request.POST)
+        form = EmployeeCreationForm(request.POST) 
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -77,6 +86,40 @@ class EmployeeListView(ListView):
     template_name = 'employees/employee_list.html'
     context_object_name = 'employees'
     paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        search_query = self.request.GET.get('search_query')
+        department_id = self.request.GET.get('department')
+        dte_id = self.request.GET.get('dte')
+        skill_names = self.request.GET.get('skills')
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(username__icontains=search_query) |
+                Q(email__icontains=search_query)
+            )
+        if department_id:
+            queryset = queryset.filter(department__id=department_id)
+        if dte_id:
+            queryset = queryset.filter(dte__id=dte_id)
+        if skill_names:
+            # スキル名でフィルタリング
+            # EmployeeProfileを介してSkillを検索
+            queryset = queryset.filter(employeeprofile__skills__name__icontains=skill_names)
+            
+        return queryset.distinct() # 重複を除去
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['departments'] = Department.objects.all()
+        context['dtes'] = DTE.objects.all()
+        context['current_search_query'] = self.request.GET.get('search_query', '')
+        context['current_department'] = self.request.GET.get('department', '')
+        context['current_dte'] = self.request.GET.get('dte', '')
+        context['current_skills'] = self.request.GET.get('skills', '')
+        return context
 
 class HRRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
@@ -108,7 +151,7 @@ class CSVBulkImportView(HRRequiredMixin, View):
             request.session['csv_validation_data'] = validation_result['data']
             
             # プレビュー画面にリダイレクト
-            return redirect('csv_preview')
+            return redirect('employees:csv_preview')
         
         return render(request, self.template_name, {'form': form})
 
@@ -154,7 +197,7 @@ class CSVPreviewView(HRRequiredMixin, View):
         # 結果をセッションに保存
         request.session['import_result'] = result
         
-        return redirect('csv_result')
+        return redirect('employees:csv_result')
 
 # Step 3: 実際のインポート実行
 class CSVResultView(HRRequiredMixin, View):
@@ -168,3 +211,11 @@ class CSVResultView(HRRequiredMixin, View):
             return redirect('csv_bulk_import')
         
         return render(request, self.template_name, {'result': result})
+
+def download_sample_csv(request):
+    file_path = os.path.join(settings.BASE_DIR, 'docs', 'sample_employees_list.csv')
+    if os.path.exists(file_path):
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename='sample_employees_list.csv')
+    else:
+        messages.error(request, "サンプルCSVファイルが見つかりません。")
+        return redirect('csv_bulk_import')

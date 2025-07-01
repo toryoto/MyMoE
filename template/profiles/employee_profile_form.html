@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     {% if form.instance.pk %}プロフィール編集{% else %}プロフィール作成{% endif %} - MyMoE
 {% endblock %}
 
 {% block content %}
+
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{% url 'profiles:my_profile_detail' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
                     <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
@@ -41,7 +43,7 @@
     </div>
 
     <div class="bg-white shadow rounded-lg">
-        <form method="post" class="space-y-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
             
             <div class="px-6 py-4 border-b border-gray-200">
@@ -52,15 +54,43 @@
             </div>
 
             <div class="px-6 py-6 space-y-6">
+            <head>
+                <!-- プロフィール写真 -->
                 <div>
-                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ form.phone_number.label }}
-                    </label>
-                    <input type="tel" 
+                    <label class="block text-sm font-medium text-gray-700 mb-2">プロフィール写真</label>
+                    <div class="mt-1 flex items-center">
+                        <div class="flex-shrink-0 mr-4">
+                            {% if form.instance.photo %}
+                                <img id="photo-preview" src="{{ form.instance.photo.url }}" alt="プロフィール写真" class="h-20 w-20 rounded-full object-cover border border-gray-300">
+                            {% else %}
+                                <img id="photo-preview" src="{% static 'images/default_profile.png' %}" alt="デフォルトプロフィール写真" class="h-20 w-20 rounded-full object-cover border border-gray-300">
+                            {% endif %}
+                        </div>
+                        <label for="{{ form.photo.id_for_label }}" class="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            変更
+                            <input id="{{ form.photo.id_for_label }}" name="{{ form.photo.name }}" type="file" class="sr-only">
+                        </label>
+                        {% if form.photo.value %}
+                            <button type="button" id="clear-photo" class="ml-3 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-red-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                削除
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% if form.photo.errors %}
+                        <div class="mt-2 text-sm text-red-600">{{ form.photo.errors }}</div>
+                    {% endif %}
+                </div>
+                    
+
+                    <div class="mb-4">
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.phone_number.label }}
+                        </label>
+                        <input type="tel" 
                            id="{{ form.phone_number.id_for_label }}" 
                            name="{{ form.phone_number.name }}" 
                            value="{{ form.phone_number.value|default:'' }}"
-                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2"
                            placeholder="例: 090-1234-5678">
                     {% if form.phone_number.help_text %}
                     <p class="mt-2 text-sm text-gray-500">{{ form.phone_number.help_text }}</p>
@@ -87,7 +117,7 @@
                            id="{{ form.date_of_birth.id_for_label }}" 
                            name="{{ form.date_of_birth.name }}" 
                            value="{{ form.date_of_birth.value|date:'Y-m-d'|default:'' }}"
-                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2">
                     {% if form.date_of_birth.help_text %}
                     <p class="mt-2 text-sm text-gray-500">{{ form.date_of_birth.help_text }}</p>
                     {% endif %}
@@ -112,7 +142,7 @@
                     <textarea id="{{ form.bio.id_for_label }}" 
                               name="{{ form.bio.name }}" 
                               rows="4"
-                              class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                              class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2"
                               placeholder="自己紹介や担当業務、趣味などを自由に記入してください...">{{ form.bio.value|default:'' }}</textarea>
                     {% if form.bio.help_text %}
                     <p class="mt-2 text-sm text-gray-500">{{ form.bio.help_text }}</p>
@@ -137,7 +167,7 @@
                         <input type="text" 
                                id="skill-input" 
                                list="skill-suggestions" 
-                               class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                               class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm p-2"
                                placeholder="スキルを入力してEnterキーを押してください">
                         <datalist id="skill-suggestions"></datalist>
                     </div>
@@ -153,7 +183,164 @@
                         {% endfor %}
                     </div>
                     {% endif %}
+                    
+                    <div id="selected-skills" class="flex flex-wrap gap-2 min-h-[2rem] mt-2">
+                        <!-- スキルタグがここに動的に追加される -->
+                    </div>
+                
+                    <!-- 元のフォームフィールドを完全に隠す -->
+                    <div style="display: none;">
+                        {{ form.skills }}
+                    </div>
+                    
+                    <!-- カスタムhidden inputs用のコンテナ -->
+                    <div id="skills-hidden-container">
+                        <!-- hidden inputsがここに動的に追加される -->
+                    </div>
                 </div>
+
+            
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>入社前の経歴セクション</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <style>
+                    .form-field {
+                        margin-bottom: 1rem;
+                    }
+                    .form-label {
+                        display: block;
+                        font-size: 0.875rem;
+                        font-weight: 500;
+                        color: #374151;
+                        margin-bottom: 0.5rem;
+                    }
+                    .form-input {
+                        display: block;
+                        width: 100%;
+                        border: 1px solid #d1d5db;
+                        border-radius: 0.375rem;
+                        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                        padding: 0.5rem;
+                        font-size: 0.875rem;
+                        color: #111827;
+                    }
+                    .form-input::placeholder {
+                        color: #9ca3af;
+                    }
+                    .form-input:focus {
+                        outline: none;
+                        border-color: #3b82f6;
+                        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                    }
+                    .form-textarea {
+                        min-height: 4rem;
+                        resize: vertical;
+                    }
+                    .error-message {
+                        margin-top: 0.5rem;
+                        font-size: 0.875rem;
+                        color: #dc2626;
+                        display: flex;
+                        align-items: center;
+                    }
+                    .error-icon {
+                        margin-right: 0.25rem;
+                        height: 1rem;
+                        width: 1rem;
+                        fill: currentColor;
+                    }
+                </style>
+            </head>
+            <body class="bg-gray-50 p-6">
+                <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6">
+
+
+                    <!-- 入社前の経歴セクション -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-6">入社前の経歴</h3>
+                        {{ history_formset.management_form }}
+                        <div id="history-forms-container">
+                            {% for form in history_formset %}
+                                <div class="history-form border border-gray-200 rounded-lg p-6 mb-6 bg-white shadow-sm" id="history-form-{{ forloop.counter0 }}">
+                                    <h4 class="text-md font-medium text-gray-800 mb-4">経歴 {{ forloop.counter }}</h4>
+                                    {{ form.id }}
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-field">
+                                            <label for="{{ form.company_name.id_for_label }}" class="form-label">会社名</label>
+                                            {{ form.company_name }}
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="{{ form.job_title.id_for_label }}" class="form-label">役職</label>
+                                            {{ form.job_title }}
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="{{ form.job_role.id_for_label }}" class="form-label">職種</label>
+                                        {{ form.job_role }}
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-field">
+                                            <label for="{{ form.start_date.id_for_label }}" class="form-label">開始日</label>
+                                            {{ form.start_date }}
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="{{ form.end_date.id_for_label }}" class="form-label">終了日</label>
+                                            {{ form.end_date }}
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="{{ form.job_description.id_for_label }}" class="form-label">職務内容</label>
+                                        {{ form.job_description }}
+                                    </div>
+                                    {% if form.instance.pk %}
+                                        <div class="form-field">
+                                            <label for="{{ form.DELETE.id_for_label }}">削除</label>
+                                            {{ form.DELETE }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div id="empty-form" class="hidden">
+                            <div class="history-form border border-gray-200 rounded-lg p-6 mb-6 bg-white shadow-sm" id="history-form-__prefix__">
+                                <h4 class="text-md font-medium text-gray-800 mb-4">新規経歴</h4>
+                                {{ history_formset.empty_form.id }}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-field">
+                                        <label for="{{ history_formset.empty_form.company_name.id_for_label }}" class="form-label">会社名</label>
+                                        {{ history_formset.empty_form.company_name }}
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="{{ history_formset.empty_form.job_title.id_for_label }}" class="form-label">役職</label>
+                                        {{ history_formset.empty_form.job_title }}
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label for="{{ history_formset.empty_form.job_role.id_for_label }}" class="form-label">職種</label>
+                                    {{ history_formset.empty_form.job_role }}
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-field">
+                                        <label for="{{ history_formset.empty_form.start_date.id_for_label }}" class="form-label">開始日</label>
+                                        {{ history_formset.empty_form.start_date }}
+                                    </div>
+                                    <div class="form-field">
+                                        <label for="{{ history_formset.empty_form.end_date.id_for_label }}" class="form-label">終了日</label>
+                                        {{ history_formset.empty_form.end_date }}
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label for="{{ history_formset.empty_form.job_description.id_for_label }}" class="form-label">職務内容</label>
+                                    {{ history_formset.empty_form.job_description }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="add-history-form" class="text-primary-600 hover:text-primary-800">+ 経歴を追加</button>
+                    </div>
+                </div>
+
+
 
                 <!-- 選択されたスキルタグ -->
                 <div id="selected-skills" class="flex flex-wrap gap-2 min-h-[2rem]">
@@ -164,11 +351,11 @@
                 <div id="skills-hidden-container" class="hidden">
                     {{ form.skills }}
                 </div>
-            </div>
+            </body>
 
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
                 <div class="flex space-x-3">
-                    <a href="{% url 'profiles:my_profile_detail' %}" 
+                    <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}"
                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
                         キャンセル
                     </a>
@@ -187,43 +374,134 @@
 
 {{ initial_skill_ids|json_script:"initial-skills" }}
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
     const skillInput = document.getElementById('skill-input');
     const skillSuggestions = document.getElementById('skill-suggestions');
     const selectedSkillsContainer = document.getElementById('selected-skills');
     const skillsHiddenContainer = document.getElementById('skills-hidden-container');
+    const originalSkillsField = document.querySelector('select[name="skills"]') || 
+                                document.querySelector('input[name="skills"]') ||
+                                document.querySelector('[name="skills"]');
 
     let allSkills = [];
     let selectedSkillIds = new Set();
 
-    // 初期表示時に既存のスキルをタグとして表示
+    // 元のフォームフィールドを無効化
+    function disableOriginalField() {
+        if (originalSkillsField) {
+            originalSkillsField.disabled = true;
+            originalSkillsField.style.display = 'none';
+            
+            // MultipleHiddenInputの場合、すべて無効化
+            const allOriginalInputs = document.querySelectorAll('input[name="skills"]:not([id^="skill-hidden-"])');
+            allOriginalInputs.forEach(input => {
+                if (!input.id.startsWith('skill-hidden-')) {
+                    input.disabled = true;
+                }
+            });
+        }
+    }
+
+    // hidden inputを更新
+    function updateHiddenInput() {
+        // 既存のカスタムhidden inputを削除
+        const existingInputs = skillsHiddenContainer.querySelectorAll('input[id^="skill-hidden-"]');
+        existingInputs.forEach(input => input.remove());
+
+        // 新しいhidden inputを作成
+        selectedSkillIds.forEach((id, index) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'skills';
+            input.id = `skill-hidden-${index}`;
+            input.value = id;
+            skillsHiddenContainer.appendChild(input);
+        });
+
+        console.log('Updated hidden inputs. Total:', selectedSkillIds.size);
+        console.log('Hidden input values:', Array.from(selectedSkillIds));
+    }
+
+    // スキルタグを追加
+    function addSkillTag(name, id, shouldUpdate = true) {
+        const skillId = parseInt(id);
+        if (selectedSkillIds.has(skillId)) return;
+
+        selectedSkillIds.add(skillId);
+
+        const tag = document.createElement('span');
+        tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200';
+        tag.dataset.skillId = skillId;
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = name;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-primary-200 focus:outline-none focus:bg-primary-200 transition-colors';
+        removeBtn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        removeBtn.setAttribute('aria-label', 'スキルを削除');
+        
+        removeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(`Removing skill ID: ${skillId}`);
+            selectedSkillIds.delete(skillId);
+            tag.remove();
+            updateHiddenInput();
+            console.log('Current selected skills after removal:', Array.from(selectedSkillIds));
+        });
+
+        tag.appendChild(nameSpan);
+        tag.appendChild(removeBtn);
+        selectedSkillsContainer.appendChild(tag);
+        
+        if (shouldUpdate) {
+            updateHiddenInput();
+        }
+    }
+
+    // 初期化
     function initializeSkills() {
+        // 元のフィールドを無効化
+        disableOriginalField();
+        
+        // コンテナをクリア
+        selectedSkillsContainer.innerHTML = '';
+        skillsHiddenContainer.innerHTML = '';
+        selectedSkillIds.clear();
+
         const initialSkillIds = JSON.parse(document.getElementById('initial-skills').textContent);
+        
         if (initialSkillIds && initialSkillIds.length > 0) {
-            // 全スキルリストを取得してからタグを追加
             fetch(`/profiles/api/skills/search/`)
                 .then(response => response.json())
                 .then(data => {
                     allSkills = data;
                     initialSkillIds.forEach(skillId => {
-                        const skill = allSkills.find(s => s.id === skillId);
+                        const skill = allSkills.find(s => s.id === parseInt(skillId));
                         if (skill) {
-                            addSkillTag(skill.name, skill.id);
+                            addSkillTag(skill.name, skill.id, false);
                         }
                     });
+                    updateHiddenInput();
+                })
+                .catch(error => {
+                    console.error('Error loading initial skills:', error);
                 });
         } else {
-            // 全スキルリストを事前に取得
             fetch(`/profiles/api/skills/search/`)
                 .then(response => response.json())
                 .then(data => {
                     allSkills = data;
+                })
+                .catch(error => {
+                    console.error('Error loading skills:', error);
                 });
         }
     }
 
-    // スキル検索とサジェスト表示
+    // スキル検索
     skillInput.addEventListener('input', function() {
         const query = skillInput.value;
         if (query.length < 1) {
@@ -234,7 +512,9 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/profiles/api/skills/search/?q=${query}`)
             .then(response => response.json())
             .then(data => {
-                allSkills = data;
+                allSkills = [...allSkills, ...data.filter(newSkill => 
+                    !allSkills.some(existingSkill => existingSkill.id === newSkill.id)
+                )];
                 skillSuggestions.innerHTML = '';
                 data.forEach(skill => {
                     const option = document.createElement('option');
@@ -242,9 +522,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     option.dataset.id = skill.id;
                     skillSuggestions.appendChild(option);
                 });
+            })
+            .catch(error => {
+                console.error('Error fetching skills:', error);
             });
     });
 
+    // Enterキーでスキル追加
     skillInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -262,51 +546,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // スキルタグを追加する関数
-    function addSkillTag(name, id) {
-        if (selectedSkillIds.has(id)) return;
-
-        selectedSkillIds.add(id);
-
-        const tag = document.createElement('span');
-        tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800 border border-primary-200';
-        
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = name;
-        
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-primary-200 focus:outline-none focus:bg-primary-200 transition-colors';
-        removeBtn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
-        removeBtn.setAttribute('aria-label', 'スキルを削除');
-        removeBtn.onclick = function() {
-            selectedSkillIds.delete(id);
-            tag.remove();
-            updateHiddenInput();
-        };
-
-        tag.appendChild(nameSpan);
-        tag.appendChild(removeBtn);
-        selectedSkillsContainer.appendChild(tag);
-        updateHiddenInput();
-    }
-
-    // 隠しフィールドを更新する関数
-    function updateHiddenInput() {
-        // コンテナの中を空にする
-        skillsHiddenContainer.innerHTML = '';
-
-        // 選択されたIDごとに新しいhidden inputを作成してコンテナに追加する
-        selectedSkillIds.forEach(id => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'skills';
-            input.value = id;
-            skillsHiddenContainer.appendChild(input);
+    // フォーム送信前の最終チェック
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // 元のフィールドが無効化されていることを確認
+            disableOriginalField();
+            
+            console.log('=== フォーム送信時の状態 ===');
+            console.log('Selected skills:', Array.from(selectedSkillIds));
+            console.log('Hidden inputs:', skillsHiddenContainer.querySelectorAll('input').length);
+            
+            // FormDataで確認
+            const formData = new FormData(form);
+            console.log('FormData skills:', formData.getAll('skills'));
         });
     }
 
+    // 初期化実行
     initializeSkills();
+
+    // その他のフォーム要素（写真など）の処理
+    const photoInput = document.getElementById('{{ form.photo.id_for_label }}');
+    const photoPreview = document.getElementById('photo-preview');
+    const clearPhotoButton = document.getElementById('clear-photo');
+
+    if (photoInput) {
+        photoInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (clearPhotoButton) {
+        clearPhotoButton.addEventListener('click', function() {
+            photoInput.value = '';
+            photoPreview.src = '{% static "images/default_profile.png" %}';
+            const clearCheckbox = document.getElementById('photo-clear_id');
+            if (clearCheckbox) {
+                clearCheckbox.checked = true;
+            }
+            clearPhotoButton.style.display = 'none';
+        });
+    }
+
+    // 履歴フォーム処理
+    const addFormButton = document.getElementById('add-history-form');
+    const formsContainer = document.getElementById('history-forms-container');
+    const emptyForm = document.getElementById('empty-form');
+    const totalFormsInput = document.querySelector('input[name="history-TOTAL_FORMS"]');
+
+    if (addFormButton && formsContainer && totalFormsInput && emptyForm) {
+        addFormButton.addEventListener('click', function() {
+            const formNum = parseInt(totalFormsInput.value);
+            const newForm = emptyForm.innerHTML.replace(/__prefix__/g, formNum);
+            formsContainer.insertAdjacentHTML('beforeend', newForm);
+            totalFormsInput.value = formNum + 1;
+        });
+    }
 });
 </script>
-{% endblock %}
+{% endblock %}""
