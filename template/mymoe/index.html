@@ -87,7 +87,8 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 opacity-50">
+    <a href="{% url 'stats:department_pie' %}">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -102,11 +103,13 @@
                 </div>
             </div>
             <div class="mt-4">
-                <span class="text-sm bg-gray-100 text-gray-400 px-3 py-1 rounded-md">
-                    準備中
+                <span class="text-sm bg-orange-50 text-orange-600 px-3 py-1 rounded-md">
+                    グラフを見る
                 </span>
             </div>
         </div>
+    </a>
+
         {% if user.is_hr %}
         <div class="mt-8">
             <h2 class="text-lg font-medium text-gray-900 mb-4">人事管理</h2>
