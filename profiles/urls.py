@@ -3,7 +3,7 @@ from django.conf import settings
 
 from profiles.views import (
     EmployeeProfileUpdateView, EmployeeProfileDetailView, 
-    SkillSearchView, UpdateEmployeeOrgInfoView, EmployeeProfilePDFView
+    SkillSearchView, EmployeeProfilePDFView
 )
 
 app_name = 'profiles'
@@ -14,7 +14,7 @@ urlpatterns = [
     
     # API エンドポイント
     path('api/skills/search/', SkillSearchView.as_view(), name='skill_search'),
-    path('update-org-info/<int:employee_id>/', UpdateEmployeeOrgInfoView.as_view(), name='update_employee_org_info'),
+    # path('update-org-info/<int:employee_id>/', UpdateEmployeeOrgInfoView.as_view(), name='update_employee_org_info'),
     
     # PDF Download
     path('<int:pk>/pdf/', EmployeeProfilePDFView.as_view(), name='profile_pdf'), 

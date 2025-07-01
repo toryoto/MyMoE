@@ -102,7 +102,7 @@
         </div>
     </div>
 
-    <!-- HR専用の管理セクション（コンパクト版） -->
+    <!-- HR専用の管理セクション -->
     {% if request.user.is_hr %}
     <div class="bg-white shadow rounded-lg mb-6">
         <div class="px-6 py-4">
@@ -110,41 +110,50 @@
             
             <!-- 組織情報とMLを横並びで配置 -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- 組織情報更新 -->
+                <!-- 組織情報更新フォーム -->
                 <div>
                     <h4 class="text-sm font-medium text-gray-700 mb-2">組織情報の更新</h4>
-                    <div class="space-y-3">
+                    <form method="post" class="space-y-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="update_org" value="1">
                         <div class="flex space-x-2">
                             <div class="flex-1">
-                                <select id="department-select" name="department" class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md">
+                                <select name="department" class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md">
                                     <option value="">部署を選択</option>
                                     {% for department in departments %}
-                                        <option value="{{ department.id }}" {% if profile.user.department.id == department.id %}selected{% endif %}>{{ department.name }}</option>
+                                        <option value="{{ department.id }}" {% if profile.user.department and profile.user.department.id == department.id %}selected{% endif %}>{{ department.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="flex-1">
-                                <select id="dte-select" name="dte" class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md">
+                                <select name="dte" class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md">
                                     <option value="">DTEを選択</option>
+                                    {% for dte in dtes %}
+                                        <option value="{{ dte.id }}" {% if profile.user.dte and profile.user.dte.id == dte.id %}selected{% endif %}>{{ dte.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button id="update-org-info-btn" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
                                 組織情報を更新
                             </button>
                         </div>
-                        <div id="update-status" class="text-sm"></div>
-                    </div>
+                    </form>
                 </div>
 
-                <!-- ML更新 -->
+                <!-- ML更新フォーム -->
                 <div>
                     <h4 class="text-sm font-medium text-gray-700 mb-2">MLレベルの更新</h4>
-                    <div class="space-y-3">
+                    <form method="post" class="space-y-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="update_ml" value="1">
                         <div class="flex space-x-2">
                             <div class="flex-1">
-                                <select id="ml-select" name="ml" class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md">
+                                <select name="ml" class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-md">
                                     <option value="">MLを選択</option>
                                     {% for choice in ML_CHOICES %}
                                         <option value="{{ choice.0 }}" {% if profile.user.ml == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
@@ -153,12 +162,14 @@
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button id="update-ml-btn" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                </svg>
                                 MLを更新
                             </button>
                         </div>
-                        <div id="update-ml-status" class="text-sm"></div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -308,8 +319,38 @@
 </div>
 
 {% if request.user.is_hr %}
-{% load static %}
-<script src="{% static 'js/profile_detail.js' %}" data-employee-id="{{ profile.user.pk }}" data-csrf-token="{{ csrf_token }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const departmentSelect = document.querySelector('select[name="department"]');
+    const dteSelect = document.querySelector('select[name="dte"]');
+    
+    if (departmentSelect && dteSelect) {
+        departmentSelect.addEventListener('change', function() {
+            const departmentId = this.value;
+            
+            // DTEセレクトをリセット
+            dteSelect.innerHTML = '<option value="">DTEを選択</option>';
+            
+            if (departmentId) {
+                // 選択された部署のDTEを取得
+                fetch(`/departments/api/departments/${departmentId}/dtes/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(dte => {
+                            const option = document.createElement('option');
+                            option.value = dte.id;
+                            option.textContent = dte.name;
+                            dteSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching DTEs:', error);
+                    });
+            }
+        });
+    }
+});
+</script>
 {% endif %}
 
 <style>
