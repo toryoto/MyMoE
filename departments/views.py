@@ -5,7 +5,6 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Department, DTE
 
-
 def dtes_by_department(request, department_id):
     dtes = DTE.objects.filter(department_id=department_id).values('id', 'name')
     return JsonResponse(list(dtes), safe=False)

@@ -64,8 +64,7 @@ class EmployeeProfileDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_hr:
             context['departments'] = Department.objects.filter(is_active=True)
-            from employees.models import ML_CHOICES
-            context['ML_CHOICES'] = ML_CHOICES
+            context['ML_CHOICES'] = Employee.ML_CHOICES
         return context
 
 class EmployeeProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
