@@ -73,7 +73,9 @@ class DTEUpdateView(SuperuserRequiredMixin, UpdateView):
     model = DTE
     template_name = 'departments/dte_form.html'
     fields = ['name', 'code', 'department', 'description', 'is_active']
-    success_url = reverse_lazy('departments:dte_list')
+
+    def get_success_url(self):
+        return reverse_lazy('departments:dte_detail', kwargs={'pk': self.object.pk})
 
 class DTEDeleteView(SuperuserRequiredMixin, DeleteView):
     model = DTE
