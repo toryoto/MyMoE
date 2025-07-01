@@ -7,11 +7,17 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">社員一覧</h1>
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">社員一覧</h1>
+        <div class="text-sm text-gray-600">
+            {{ employees|length }} 名の社員
+        </div>
+    </div>
 
+    <!-- 検索・フィルターセクション -->
     <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
         <form method="GET" action="{% url 'employees:employee_list' %}">
-            <!-- Main Search Input -->
+            <!-- メイン検索入力 -->
             <div class="mb-6">
                 <label for="search-input" class="block text-sm font-medium text-gray-700 mb-2">キーワード検索</label>
                 <div class="relative">
@@ -24,12 +30,12 @@
                 </div>
             </div>
 
-            <!-- Filter Options -->
+            <!-- フィルターオプション -->
             <div class="mb-6">
                 <h3 class="text-sm font-medium text-gray-700 mb-3">フィルター</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label for="department-filter" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <label for="department-filter" class="block text-sm font-medium text-gray-700 mb-1">部署</label>
                         <select id="department-filter" name="department" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
                             <option value="">全て</option>
                             {% for department in departments %}
@@ -47,7 +53,25 @@
                         </select>
                     </div>
                     <div>
-                        <label for="skill-input" class="block text-sm font-medium text-gray-700 mb-1">Skill</label>
+                        <label for="ml-filter" class="block text-sm font-medium text-gray-700 mb-1">MLレベル</label>
+                        <select id="ml-filter" name="ml" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                            <option value="">全て</option>
+                            {% if ML_CHOICES %}
+                                {% for choice in ML_CHOICES %}
+                                    <option value="{{ choice.0 }}" {% if choice.0 == current_ml %}selected{% endif %}>{{ choice.1 }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <!-- バックエンドでML_CHOICESが定義されていない場合のフォールバック -->
+                                <option value="1" {% if current_ml == "1" %}selected{% endif %}>ML1</option>
+                                <option value="2" {% if current_ml == "2" %}selected{% endif %}>ML2</option>
+                                <option value="3" {% if current_ml == "3" %}selected{% endif %}>ML3</option>
+                                <option value="4" {% if current_ml == "4" %}selected{% endif %}>ML4</option>
+                                <option value="5" {% if current_ml == "5" %}selected{% endif %}>ML5</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="skill-input" class="block text-sm font-medium text-gray-700 mb-1">スキル</label>
                         <div class="relative">
                             <input type="text" id="skill-input" name="skills" value="{{ current_skills }}" placeholder="スキル名を入力..." class="block w-full px-3 py-2.5 border border-gray-300 rounded-md shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" autocomplete="off">
                             <div id="skill-suggestions" class="absolute z-20 bg-white shadow-lg rounded-md mt-1 w-full max-h-60 overflow-y-auto border border-gray-200 hidden"></div>
@@ -56,7 +80,7 @@
                 </div>
             </div>
             
-            <!-- Search Button Row -->
+            <!-- 検索ボタン行 -->
             <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,6 +98,7 @@
         </form>
     </div>
 
+    <!-- 社員リストテーブル -->
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <div class="overflow-x-auto">
@@ -81,16 +106,22 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
+                                社員名
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
+                                メール
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Department
+                                部署
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 DTE
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                MLレベル
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ステータス
                             </th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">詳細</span>
@@ -99,12 +130,28 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         {% for employee in employees %}
-                        <tr>
+                        <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="ml-4">
+                                    <!-- プロフィール写真またはアバター -->
+                                    <div class="flex-shrink-0 mr-3">
+                                        {% if employee.employeeprofile.photo %}
+                                            <img src="{{ employee.employeeprofile.photo.url }}" alt="プロフィール写真"
+                                                class="h-10 w-10 rounded-full object-cover">
+                                        {% else %}
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-primary-400 to-primary-600 flex items-center justify-center">
+                                                <span class="text-sm font-medium text-white">
+                                                    {{ employee.get_full_name|default:employee.username|slice:":1"|upper }}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
                                         <div class="text-sm font-medium text-gray-900">
-                                            {{ employee.username }}
+                                            {{ employee.get_full_name|default:employee.username }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            @{{ employee.username }}
                                         </div>
                                     </div>
                                 </div>
@@ -113,23 +160,85 @@
                                 <div class="text-sm text-gray-900">{{ employee.email }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{% if employee.department %}{{ employee.department.name }}{% else %}未設定{% endif %}</div>
+                                <div class="text-sm text-gray-900">
+                                    {% if employee.department %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ employee.department.name }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-gray-400">未設定</span>
+                                    {% endif %}
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {% if employee.dte %}{{ employee.dte.name }}{% else %}未設定{% endif %}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    {% if employee.dte %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            {{ employee.dte.name }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-gray-400">未設定</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    {% if employee.ml %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ employee.get_ml_display }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-gray-400">未設定</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center space-x-1">
+                                    {% if employee.is_staff %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            管理者
+                                        </span>
+                                    {% endif %}
+                                    {% if employee.is_hr %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            HR
+                                        </span>
+                                    {% endif %}
+                                    {% if employee.last_login == false %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            未ログイン
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {% if employee.employeeprofile %}
-                                <a href="{% url 'profiles:employee_profile_detail' employee.employeeprofile.pk %}" class="text-primary-600 hover:text-primary-900">詳細</a>
+                                    <a href="{% url 'profiles:employee_profile_detail' employee.employeeprofile.pk %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 hover:text-primary-700 transition-colors">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        詳細
+                                    </a>
                                 {% else %}
-                                <span class="text-gray-400">未登録</span>
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium text-gray-400 bg-gray-100">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.348 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        未登録
+                                    </span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                                社員情報がありません。
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="text-gray-400">
+                                    <svg class="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-500">条件に一致する社員が見つかりません。</p>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -139,19 +248,41 @@
         </div>
     </div>
 
+    <!-- ページネーション -->
     {% if is_paginated %}
-    <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4" aria-label="Pagination">
-        <div class="flex-1 flex justify-between sm:justify-end">
-            {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                前へ
-            </a>
-            {% endif %}
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                次へ
-            </a>
-            {% endif %}
+    <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow-sm" aria-label="Pagination">
+        <div class="flex-1 flex justify-between items-center">
+            <div class="text-sm text-gray-700">
+                <span class="font-medium">{{ page_obj.start_index }}</span>
+                -
+                <span class="font-medium">{{ page_obj.end_index }}</span>
+                件目 / 全
+                <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                件
+            </div>
+            <div class="flex space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    前へ
+                </a>
+                {% endif %}
+                
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 rounded-md">
+                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    次へ
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                {% endif %}
+            </div>
         </div>
     </nav>
     {% endif %}
@@ -161,101 +292,93 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    const skillInput = document.getElementById('skill-input');
-    const skillSuggestions = document.getElementById('skill-suggestions');
-    let timeout = null;
-    let isClickingOnSuggestion = false; // クリック中フラグを追加
+        const skillInput = document.getElementById('skill-input');
+        const skillSuggestions = document.getElementById('skill-suggestions');
+        let timeout = null;
+        let isClickingOnSuggestion = false;
 
-    skillInput.addEventListener('input', function() {
-        clearTimeout(timeout);
-        const query = this.value;
-        console.log('Skill input changed:', query); // デバッグ用
-        
-        if (query.length < 2) { // 2文字以上で検索開始
-            skillSuggestions.innerHTML = '';
-            skillSuggestions.classList.add('hidden');
-            return;
-        }
-
-        timeout = setTimeout(function() {
-            console.log('Fetching skills for query:', query); // デバッグ用
-            fetch(`{% url 'profiles:skill_search' %}?q=${encodeURIComponent(query)}`)
-                .then(response => {
-                    console.log('Response status:', response.status); // デバッグ用
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Skills received:', data); // デバッグ用
-                    skillSuggestions.innerHTML = '';
-                    if (data.length > 0) {
-                        data.forEach(skill => {
-                            const div = document.createElement('div');
-                            div.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'border-b', 'border-gray-100', 'last:border-b-0');
-                            div.textContent = skill.name;
-                            
-                            // mousedownイベントを追加してクリック開始を検知
-                            div.addEventListener('mousedown', function() {
-                                isClickingOnSuggestion = true;
-                            });
-                            
-                            div.addEventListener('click', function() {
-                                skillInput.value = skill.name;
-                                skillSuggestions.innerHTML = '';
-                                skillSuggestions.classList.add('hidden');
-                                isClickingOnSuggestion = false; // クリック完了後にリセット
-                                skillInput.focus(); // 入力フィールドにフォーカスを戻す
-                            });
-                            skillSuggestions.appendChild(div);
-                        });
-                        skillSuggestions.classList.remove('hidden');
-                    } else {
-                        skillSuggestions.classList.add('hidden');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching skills:', error);
-                    skillSuggestions.classList.add('hidden');
-                });
-        }, 300); // 300msのディレイ
-    });
-
-    // 入力フィールドからフォーカスが外れたら候補を非表示にする
-    skillInput.addEventListener('blur', function() {
-        // クリック中でない場合のみ非表示にする
-        if (!isClickingOnSuggestion) {
-            setTimeout(() => {
+        skillInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            const query = this.value;
+            
+            if (query.length < 2) {
+                skillSuggestions.innerHTML = '';
                 skillSuggestions.classList.add('hidden');
-            }, 100);
-        }
+                return;
+            }
+
+            timeout = setTimeout(function() {
+                fetch(`{% url 'profiles:skill_search' %}?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        skillSuggestions.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(skill => {
+                                const div = document.createElement('div');
+                                div.classList.add('p-2', 'cursor-pointer', 'hover:bg-gray-100', 'border-b', 'border-gray-100', 'last:border-b-0');
+                                div.textContent = skill.name;
+                                
+                                div.addEventListener('mousedown', function() {
+                                    isClickingOnSuggestion = true;
+                                });
+                                
+                                div.addEventListener('click', function() {
+                                    skillInput.value = skill.name;
+                                    skillSuggestions.innerHTML = '';
+                                    skillSuggestions.classList.add('hidden');
+                                    isClickingOnSuggestion = false;
+                                    skillInput.focus();
+                                });
+                                skillSuggestions.appendChild(div);
+                            });
+                            skillSuggestions.classList.remove('hidden');
+                        } else {
+                            skillSuggestions.classList.add('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching skills:', error);
+                        skillSuggestions.classList.add('hidden');
+                    });
+            }, 300);
+        });
+
+        skillInput.addEventListener('blur', function() {
+            if (!isClickingOnSuggestion) {
+                setTimeout(() => {
+                    skillSuggestions.classList.add('hidden');
+                }, 100);
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!skillInput.contains(event.target) && !skillSuggestions.contains(event.target)) {
+                skillSuggestions.classList.add('hidden');
+                isClickingOnSuggestion = false;
+            }
+        });
+
+        // ページネーションリンクに現在の検索クエリを保持
+        const paginationLinks = document.querySelectorAll('nav a[href*="page="]');
+        paginationLinks.forEach(link => {
+            const url = new URL(link.href);
+            const params = new URLSearchParams(url.search);
+
+            const currentSearchQuery = document.getElementById('search-input').value;
+            const currentDepartment = document.getElementById('department-filter').value;
+            const currentDTE = document.getElementById('dte-filter').value;
+            const currentML = document.getElementById('ml-filter').value;
+            const currentSkills = document.getElementById('skill-input').value;
+
+            if (currentSearchQuery) params.set('search_query', currentSearchQuery);
+            if (currentDepartment) params.set('department', currentDepartment);
+            if (currentDTE) params.set('dte', currentDTE);
+            if (currentML) params.set('ml', currentML);
+            if (currentSkills) params.set('skills', currentSkills);
+
+            url.search = params.toString();
+            link.href = url.toString();
+        });
     });
-
-    // 候補リスト以外をクリックした場合の処理
-    document.addEventListener('click', function(event) {
-        if (!skillInput.contains(event.target) && !skillSuggestions.contains(event.target)) {
-            skillSuggestions.classList.add('hidden');
-            isClickingOnSuggestion = false;
-        }
-    });
-
-    // ページネーションリンクに現在の検索クエリを保持
-    const paginationLinks = document.querySelectorAll('nav a[href*="page="]');
-    paginationLinks.forEach(link => {
-        const url = new URL(link.href);
-        const params = new URLSearchParams(url.search);
-
-        const currentSearchQuery = document.getElementById('search-input').value;
-        const currentDepartment = document.getElementById('department-filter').value;
-        const currentDTE = document.getElementById('dte-filter').value;
-        const currentSkills = document.getElementById('skill-input').value;
-
-        if (currentSearchQuery) params.set('search_query', currentSearchQuery);
-        if (currentDepartment) params.set('department', currentDepartment);
-        if (currentDTE) params.set('dte', currentDTE);
-        if (currentSkills) params.set('skills', currentSkills);
-
-        url.search = params.toString();
-        link.href = url.toString();
-    });
-});
 </script>
 {% endblock %}

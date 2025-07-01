@@ -5,7 +5,6 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Department, DTE
 
-
 def dtes_by_department(request, department_id):
     dtes = DTE.objects.filter(department_id=department_id).values('id', 'name')
     return JsonResponse(list(dtes), safe=False)
@@ -74,7 +73,9 @@ class DTEUpdateView(SuperuserRequiredMixin, UpdateView):
     model = DTE
     template_name = 'departments/dte_form.html'
     fields = ['name', 'code', 'department', 'description', 'is_active']
-    success_url = reverse_lazy('departments:dte_list')
+
+    def get_success_url(self):
+        return reverse_lazy('departments:dte_detail', kwargs={'pk': self.object.pk})
 
 class DTEDeleteView(SuperuserRequiredMixin, DeleteView):
     model = DTE

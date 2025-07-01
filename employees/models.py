@@ -3,12 +3,13 @@ from django.db import models
 from departments.models import Department, DTE
 from django.core.exceptions import ValidationError
 
-ML_CHOICES = [
-    ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'),
-    ('6', '6'), ('7', '7'), ('8', '8'), ('9', '9'), ('10', '10'), ('11', '11'),
-]
 
 class Employee(AbstractUser):
+    ML_CHOICES = [
+        ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'),
+        ('6', '6'), ('7', '7'), ('8', '8'), ('9', '9'), ('10', '10'), ('11', '11'),
+    ]
+    
     department = models.ForeignKey(Department, on_delete=models.PROTECT, related_name='employees', null=True, blank=True)
     dte = models.ForeignKey(DTE, on_delete=models.PROTECT, related_name='employees', null=True, blank=True)
     is_hr = models.BooleanField(default=False)

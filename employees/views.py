@@ -5,25 +5,24 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import View
 from django.contrib import messages
-from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, get_user_model
 from django.db.models import Q
-from django.http import JsonResponse
 
 from .forms import EmployeeCreationForm
 from .models import Employee
 from .forms import CSVUploadForm
 from .utils.csv_processor import CSVProcessor
-from departments.models import Department, DTE
-from profiles.models import Skill, EmployeeProfile
+from .models import Employee, Department, DTE
 # CSV関連
 from django.http import FileResponse, HttpResponse
 import os
 from django.conf import settings
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from .models import ML_CHOICES
+
+User = get_user_model()
 
 def mymoe_home(request):
     if not request.user.is_authenticated:
@@ -96,6 +95,7 @@ class EmployeeListView(ListView):
         search_query = self.request.GET.get('search_query')
         department_id = self.request.GET.get('department')
         dte_id = self.request.GET.get('dte')
+        ml_level = self.request.GET.get('ml')  # MLレベルフィルター追加
         skill_names = self.request.GET.get('skills')
 
         if search_query:
@@ -107,21 +107,29 @@ class EmployeeListView(ListView):
             queryset = queryset.filter(department__id=department_id)
         if dte_id:
             queryset = queryset.filter(dte__id=dte_id)
+        if ml_level:
+            queryset = queryset.filter(ml=ml_level)
         if skill_names:
             # スキル名でフィルタリング
             # EmployeeProfileを介してSkillを検索
             queryset = queryset.filter(employeeprofile__skills__name__icontains=skill_names)
             
         return queryset.distinct() # 重複を除去
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         context['departments'] = Department.objects.all()
         context['dtes'] = DTE.objects.all()
+        
+        context['ML_CHOICES'] = Employee.ML_CHOICES
+        
         context['current_search_query'] = self.request.GET.get('search_query', '')
         context['current_department'] = self.request.GET.get('department', '')
         context['current_dte'] = self.request.GET.get('dte', '')
+        context['current_ml'] = self.request.GET.get('ml', '')
         context['current_skills'] = self.request.GET.get('skills', '')
+        
         return context
 
 class HRRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -237,7 +245,7 @@ def update_ml(request, pk):
     ml_value = request.POST.get('ml')
 
     # ML_CHOICESから有効な選択肢のリストを作成
-    valid_ml_choices = [choice[0] for choice in ML_CHOICES]
+    valid_ml_choices = [choice[0] for choice in Employee.ML_CHOICES]
 
     if ml_value not in valid_ml_choices:
         return HttpResponse("無効なML値です。", status=400)
