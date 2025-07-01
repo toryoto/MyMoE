@@ -1,32 +1,498 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} DTE{% endblock %}
+{% block title %}{% if form.instance.pk %}DTE編集{% else %}DTE追加{% endif %} - MyMoE{% endblock %}
 
 {% block content %}
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">{% if form.instance.pk %}Edit{% else %}Add{% endif %} DTE</h1>
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg p-6">
-            <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="mb-4">
-                        <label for="{{ field.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <p class="text-gray-600 text-xs italic">{{ field.help_text }}</p>
-                        {% endif %}
-                        {% for error in field.errors %}
-                            <p class="text-red-500 text-xs italic">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-                <div class="flex items-center justify-between">
-                    <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200">
-                        Save
-                    </button>
-                    <a href="{% url 'departments:dte_list' %}" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800">Cancel</a>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ブレッドクラム -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'departments:dte_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors">
+                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    DTE一覧
+                </a>
+            </li>
+            {% if form.instance.pk %}
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{% url 'departments:dte_detail' form.instance.pk %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ml-2 transition-colors">{{ form.instance.name }}</a>
                 </div>
-            </form>
+            </li>
+            {% endif %}
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{% if form.instance.pk %}編集{% else %}新規作成{% endif %}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ページヘッダー -->
+    <div class="mb-8">
+        <div class="flex items-center space-x-4">
+            <!-- アイコン -->
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center shadow-lg">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4"></path>
+                    </svg>
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">
+                    {% if form.instance.pk %}DTE情報を編集{% else %}新しいDTEを作成{% endif %}
+                </h1>
+                <p class="mt-2 text-lg text-gray-600">
+                    {% if form.instance.pk %}
+                        {{ form.instance.name }}の詳細情報を更新してください
+                    {% else %}
+                        部署に新しいDTEを追加します
+                    {% endif %}
+                </p>
+            </div>
         </div>
     </div>
+
+    <!-- メインフォーム -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <form method="post" class="space-y-0">
+            {% csrf_token %}
+            
+            <!-- フォームヘッダー -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-8 py-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">DTE情報</h3>
+                        <p class="mt-1 text-sm text-gray-600">
+                            DTEの基本情報を入力してください。コードは部署内で一意である必要があります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- フォームフィールド -->
+            <div class="px-8 py-8 space-y-8">
+                <!-- 基本情報セクション -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">基本情報</h4>
+                    
+                    <!-- DTE名とDTEコードを横並び -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- DTE名 -->
+                        <div class="space-y-2">
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                <span class="flex items-center">
+                                    <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4"></path>
+                                    </svg>
+                                    {{ form.name.label }}
+                                    <span class="text-red-500 ml-1">*</span>
+                                </span>
+                            </label>
+                            <div class="relative">
+                                {% if form.name.field.widget.input_type == 'text' %}
+                                <input type="text" 
+                                       id="{{ form.name.id_for_label }}" 
+                                       name="{{ form.name.name }}" 
+                                       value="{{ form.name.value|default:'' }}"
+                                       class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-gray-900"
+                                       placeholder="例: Quality Engineering & Assurance">
+                                {% else %}
+                                {{ form.name }}
+                                {% endif %}
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% if form.name.help_text %}
+                            <p class="text-xs text-gray-500 flex items-center">
+                                <svg class="h-3 w-3 text-green-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                {{ form.name.help_text }}
+                            </p>
+                            {% endif %}
+                            {% if form.name.errors %}
+                            <div class="space-y-1">
+                                {% for error in form.name.errors %}
+                                <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                    <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- DTEコード -->
+                        <div class="space-y-2">
+                            <label for="{{ form.code.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                <span class="flex items-center">
+                                    <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                    {{ form.code.label }}
+                                    <span class="text-red-500 ml-1">*</span>
+                                </span>
+                            </label>
+                            <div class="relative">
+                                {% if form.code.field.widget.input_type == 'text' %}
+                                <input type="text" 
+                                       id="{{ form.code.id_for_label }}" 
+                                       name="{{ form.code.name }}" 
+                                       value="{{ form.code.value|default:'' }}"
+                                       class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-gray-900 uppercase tracking-wider"
+                                       placeholder="例: QEA"
+                                       maxlength="10">
+                                {% else %}
+                                {{ form.code }}
+                                {% endif %}
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% if form.code.help_text %}
+                            <p class="text-xs text-gray-500 flex items-center">
+                                <svg class="h-3 w-3 text-green-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                {{ form.code.help_text }}
+                            </p>
+                            {% endif %}
+                            {% if form.code.errors %}
+                            <div class="space-y-1">
+                                {% for error in form.code.errors %}
+                                <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                    <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 所属部署 -->
+                    <div class="space-y-2">
+                        <label for="{{ form.department.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                            <span class="flex items-center">
+                                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4"></path>
+                                </svg>
+                                {{ form.department.label }}
+                                <span class="text-red-500 ml-1">*</span>
+                            </span>
+                        </label>
+                        <div class="relative">
+                            <div class="block w-full relative">
+                                {{ form.department }}
+                            </div>
+                        </div>
+                        {% if form.department.help_text %}
+                        <p class="text-xs text-gray-500 flex items-center">
+                            <svg class="h-3 w-3 text-green-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            {{ form.department.help_text }}
+                        </p>
+                        {% endif %}
+                        {% if form.department.errors %}
+                        <div class="space-y-1">
+                            {% for error in form.department.errors %}
+                            <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                {{ error }}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 詳細情報セクション -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">詳細情報</h4>
+                    
+                    <!-- 説明 -->
+                    <div class="space-y-2">
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                            <span class="flex items-center">
+                                <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                                </svg>
+                                {{ form.description.label }}
+                            </span>
+                        </label>
+                        <div class="relative">
+                            {{ form.description }}
+                        </div>
+                        {% if form.description.help_text %}
+                        <p class="text-xs text-gray-500 flex items-center">
+                            <svg class="h-3 w-3 text-green-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            {{ form.description.help_text }}
+                        </p>
+                        {% endif %}
+                        {% if form.description.errors %}
+                        <div class="space-y-1">
+                            {% for error in form.description.errors %}
+                            <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                {{ error }}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- アクティブ状態 -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex items-center h-5 mt-0.5">
+                                {{ form.is_active }}
+                            </div>
+                            <div class="text-sm">
+                                <label for="{{ form.is_active.id_for_label }}" class="font-semibold text-gray-900 cursor-pointer">
+                                    <span class="flex items-center">
+                                        <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ form.is_active.label }}
+                                    </span>
+                                </label>
+                                <p class="text-gray-600 mt-1">非アクティブにすると、このDTEは選択できなくなります</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- フォームフッター -->
+            <div class="bg-gray-50 px-8 py-6 border-t border-gray-200 flex justify-between items-center">
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="h-4 w-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span>必須項目</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="{% if form.instance.pk %}{% url 'departments:dte_detail' form.instance.pk %}{% else %}{% url 'departments:dte_list' %}{% endif %}" 
+                       class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        キャンセル
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-105">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {% if form.instance.pk %}更新する{% else %}作成する{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ヘルプセクション -->
+    <div class="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 shadow-sm">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <div class="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-green-900">DTE設定について</h3>
+                <div class="mt-3 text-sm text-green-800">
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-green-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">DTEコード</p>
+                                <p class="text-green-700">部署内で一意である必要があります（例: QEA, AS-FS, ICE）</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-green-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">所属部署</p>
+                                <p class="text-green-700">DTEは必ず1つの部署に所属している必要があります</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-green-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">説明</p>
+                                <p class="text-green-700">DTEの専門分野や担当業務を明確に記載してください</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-green-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">アクティブ状態</p>
+                                <p class="text-green-700">非アクティブにすると新規社員の配属はできません</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-red-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">削除について</p>
+                                <p class="text-green-700">DTEを削除する前に、所属社員の移動が必要です</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 入力フィールドのフォーカス時のアニメーション */
+input:focus, textarea:focus, select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+}
+
+/* チェックボックスのカスタムスタイル */
+input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+}
+
+/* セレクトボックスのスタイル調整 */
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding: 0.75rem 2.5rem 0.75rem 1rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    outline: none !important;
+    transition: all 0.2s ease-in-out !important;
+    background-color: white !important;
+    width: 100% !important;
+    color: #111827 !important;
+    font-size: 0.875rem !important;
+}
+
+select:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+/* テキストエリアのスタイル調整 */
+textarea {
+    padding: 0.75rem 1rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    outline: none !important;
+    transition: all 0.2s ease-in-out !important;
+    background-color: white !important;
+    width: 100% !important;
+    color: #111827 !important;
+    font-size: 0.875rem !important;
+}
+
+textarea:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+/* チェックボックスのスタイル調整 */
+input[type="checkbox"] {
+    height: 1.25rem !important;
+    width: 1.25rem !important;
+    color: #10b981 !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.25rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+}
+
+/* ボタンのホバーエフェクト */
+button[type="submit"]:hover {
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+}
+
+/* スムーズな遷移効果 */
+* {
+    transition: all 0.2s ease-in-out;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+    .grid-cols-1.md\\:grid-cols-2 {
+        gap: 1rem;
+    }
+    
+    .px-8 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .py-8 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}
+</style>
 {% endblock %}

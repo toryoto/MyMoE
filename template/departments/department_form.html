@@ -8,7 +8,7 @@
     <nav class="flex mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{% url 'departments:department_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                <a href="{% url 'departments:department_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors">
                     <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
@@ -21,7 +21,7 @@
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <a href="{% url 'departments:department_detail' form.instance.pk %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ml-2">{{ form.instance.name }}</a>
+                    <a href="{% url 'departments:department_detail' form.instance.pk %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ml-2 transition-colors">{{ form.instance.name }}</a>
                 </div>
             </li>
             {% endif %}
@@ -36,151 +36,242 @@
         </ol>
     </nav>
 
-    <!-- ヘッダー -->
+    <!-- ページヘッダー -->
     <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-900">
-            {% if form.instance.pk %}部署情報を編集{% else %}新しい部署を作成{% endif %}
-        </h1>
-        <p class="mt-2 text-sm text-gray-600">
-            {% if form.instance.pk %}
-                {{ form.instance.name }}の詳細情報を更新してください
-            {% else %}
-                組織に新しい部署を追加します
-            {% endif %}
-        </p>
+        <div class="flex items-center space-x-4">
+            <!-- アイコン -->
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4"></path>
+                    </svg>
+                </div>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">
+                    {% if form.instance.pk %}部署情報を編集{% else %}新しい部署を作成{% endif %}
+                </h1>
+                <p class="mt-2 text-lg text-gray-600">
+                    {% if form.instance.pk %}
+                        {{ form.instance.name }}の詳細情報を更新してください
+                    {% else %}
+                        組織に新しい部署を追加します
+                    {% endif %}
+                </p>
+            </div>
+        </div>
     </div>
 
-    <!-- フォーム -->
-    <div class="bg-white shadow rounded-lg">
-        <form method="post" class="space-y-6">
+    <!-- メインフォーム -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+        <form method="post" class="space-y-0">
             {% csrf_token %}
             
             <!-- フォームヘッダー -->
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">部署情報</h3>
-                <p class="mt-1 text-sm text-gray-500">
-                    部署の基本情報を入力してください。コードは組織内で一意である必要があります。
-                </p>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900">部署情報</h3>
+                        <p class="mt-1 text-sm text-gray-600">
+                            部署の基本情報を入力してください。コードは組織内で一意である必要があります。
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- フォームフィールド -->
-            <div class="px-6 py-6 space-y-6">
-                <!-- 部署名 -->
-                <div>
-                    <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ form.name.label }}
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           id="{{ form.name.id_for_label }}" 
-                           name="{{ form.name.name }}" 
-                           value="{{ form.name.value|default:'' }}"
-                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                           placeholder="例: Technology">
-                    {% if form.name.help_text %}
-                    <p class="mt-2 text-sm text-gray-500">{{ form.name.help_text }}</p>
-                    {% endif %}
-                    {% if form.name.errors %}
-                    <div class="mt-2">
-                        {% for error in form.name.errors %}
-                        <p class="text-sm text-red-600 flex items-center">
-                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                            {{ error }}
-                        </p>
-                        {% endfor %}
+            <div class="px-8 py-8 space-y-8">
+                <!-- 基本情報セクション -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">基本情報</h4>
+                    
+                    <!-- 部署名と部署コードを横並び -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 部署名 -->
+                        <div class="space-y-2">
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                <span class="flex items-center">
+                                    <svg class="h-4 w-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4"></path>
+                                    </svg>
+                                    {{ form.name.label }}
+                                    <span class="text-red-500 ml-1">*</span>
+                                </span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" 
+                                       id="{{ form.name.id_for_label }}" 
+                                       name="{{ form.name.name }}" 
+                                       value="{{ form.name.value|default:'' }}"
+                                       class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900"
+                                       placeholder="例: Technology">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% if form.name.help_text %}
+                            <p class="text-xs text-gray-500 flex items-center">
+                                <svg class="h-3 w-3 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                {{ form.name.help_text }}
+                            </p>
+                            {% endif %}
+                            {% if form.name.errors %}
+                            <div class="space-y-1">
+                                {% for error in form.name.errors %}
+                                <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                    <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 部署コード -->
+                        <div class="space-y-2">
+                            <label for="{{ form.code.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                <span class="flex items-center">
+                                    <svg class="h-4 w-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                    {{ form.code.label }}
+                                    <span class="text-red-500 ml-1">*</span>
+                                </span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" 
+                                       id="{{ form.code.id_for_label }}" 
+                                       name="{{ form.code.name }}" 
+                                       value="{{ form.code.value|default:'' }}"
+                                       class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 uppercase tracking-wider"
+                                       placeholder="例: TECH"
+                                       maxlength="10">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% if form.code.help_text %}
+                            <p class="text-xs text-gray-500 flex items-center">
+                                <svg class="h-3 w-3 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                {{ form.code.help_text }}
+                            </p>
+                            {% endif %}
+                            {% if form.code.errors %}
+                            <div class="space-y-1">
+                                {% for error in form.code.errors %}
+                                <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                    <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% endif %}
                 </div>
 
-                <!-- 部署コード -->
-                <div>
-                    <label for="{{ form.code.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ form.code.label }}
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           id="{{ form.code.id_for_label }}" 
-                           name="{{ form.code.name }}" 
-                           value="{{ form.code.value|default:'' }}"
-                           class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                           placeholder="例: TECH"
-                           maxlength="10">
-                    {% if form.code.help_text %}
-                    <p class="mt-2 text-sm text-gray-500">{{ form.code.help_text }}</p>
-                    {% endif %}
-                    {% if form.code.errors %}
-                    <div class="mt-2">
-                        {% for error in form.code.errors %}
-                        <p class="text-sm text-red-600 flex items-center">
-                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                            {{ error }}
-                        </p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- 説明 -->
-                <div>
-                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
-                        {{ form.description.label }}
-                    </label>
-                    <textarea id="{{ form.description.id_for_label }}" 
-                              name="{{ form.description.name }}" 
-                              rows="4"
-                              class="block w-full border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                              placeholder="部署の役割や担当業務について詳しく説明してください...">{{ form.description.value|default:'' }}</textarea>
-                    {% if form.description.help_text %}
-                    <p class="mt-2 text-sm text-gray-500">{{ form.description.help_text }}</p>
-                    {% endif %}
-                    {% if form.description.errors %}
-                    <div class="mt-2">
-                        {% for error in form.description.errors %}
-                        <p class="text-sm text-red-600 flex items-center">
-                            <svg class="mr-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                            {{ error }}
-                        </p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!-- アクティブ状態 -->
-                <div class="relative flex items-start">
-                    <div class="flex items-center h-5">
-                        <input id="{{ form.is_active.id_for_label }}" 
-                               name="{{ form.is_active.name }}" 
-                               type="checkbox" 
-                               {% if form.is_active.value %}checked{% endif %}
-                               class="focus:ring-primary-500 h-4 w-4 text-primary-600 border-gray-300 rounded">
-                    </div>
-                    <div class="ml-3 text-sm">
-                        <label for="{{ form.is_active.id_for_label }}" class="font-medium text-gray-700">
-                            {{ form.is_active.label }}
+                <!-- 詳細情報セクション -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">詳細情報</h4>
+                    
+                    <!-- 説明 -->
+                    <div class="space-y-2">
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                            <span class="flex items-center">
+                                <svg class="h-4 w-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+                                </svg>
+                                {{ form.description.label }}
+                            </span>
                         </label>
-                        <p class="text-gray-500">非アクティブにすると、この部署は選択できなくなります</p>
+                        <textarea id="{{ form.description.id_for_label }}" 
+                                  name="{{ form.description.name }}" 
+                                  rows="4"
+                                  class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-900 resize-vertical"
+                                  placeholder="部署の役割や担当業務について詳しく説明してください...">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.help_text %}
+                        <p class="text-xs text-gray-500 flex items-center">
+                            <svg class="h-3 w-3 text-blue-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            {{ form.description.help_text }}
+                        </p>
+                        {% endif %}
+                        {% if form.description.errors %}
+                        <div class="space-y-1">
+                            {% for error in form.description.errors %}
+                            <p class="text-sm text-red-600 flex items-center bg-red-50 px-3 py-2 rounded-md">
+                                <svg class="mr-2 h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                {{ error }}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- アクティブ状態 -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex items-center h-5 mt-0.5">
+                                <input id="{{ form.is_active.id_for_label }}" 
+                                       name="{{ form.is_active.name }}" 
+                                       type="checkbox" 
+                                       {% if form.is_active.value %}checked{% endif %}
+                                       class="focus:ring-blue-500 h-5 w-5 text-blue-600 border-gray-300 rounded transition-all duration-200">
+                            </div>
+                            <div class="text-sm">
+                                <label for="{{ form.is_active.id_for_label }}" class="font-semibold text-gray-900 cursor-pointer">
+                                    <span class="flex items-center">
+                                        <svg class="h-4 w-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        {{ form.is_active.label }}
+                                    </span>
+                                </label>
+                                <p class="text-gray-600 mt-1">非アクティブにすると、この部署は選択できなくなります</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- フォームフッター -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
-                <div class="text-sm text-gray-500">
-                    <span class="text-red-500">*</span> 必須項目
+            <div class="bg-gray-50 px-8 py-6 border-t border-gray-200 flex justify-between items-center">
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="h-4 w-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span>必須項目</span>
                 </div>
-                <div class="flex space-x-3">
+                <div class="flex space-x-4">
                     <a href="{% if form.instance.pk %}{% url 'departments:department_detail' form.instance.pk %}{% else %}{% url 'departments:department_list' %}{% endif %}" 
-                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                       class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                         キャンセル
                     </a>
                     <button type="submit" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                            class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
                         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
@@ -192,25 +283,107 @@
     </div>
 
     <!-- ヘルプセクション -->
-    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                </svg>
+                <div class="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
             </div>
-            <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800">部署設定について</h3>
-                <div class="mt-2 text-sm text-blue-700">
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li><strong>部署コード</strong>: 組織内で一意である必要があります（例: TECH, HR, SALES）</li>
-                        <li><strong>説明</strong>: 部署の役割や責任範囲を明確に記載してください</li>
-                        <li><strong>アクティブ状態</strong>: 非アクティブにすると新規社員の配属はできません</li>
-                        <li>部署を削除する前に、所属社員やDTEの移動が必要です</li>
-                    </ul>
+            <div class="ml-4">
+                <h3 class="text-lg font-semibold text-blue-900">部署設定について</h3>
+                <div class="mt-3 text-sm text-blue-800">
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-blue-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">部署コード</p>
+                                <p class="text-blue-700">組織内で一意である必要があります（例: TECH, HR, SALES）</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-blue-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">説明</p>
+                                <p class="text-blue-700">部署の役割や責任範囲を明確に記載してください</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-blue-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">アクティブ状態</p>
+                                <p class="text-blue-700">非アクティブにすると新規社員の配属はできません</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div class="h-5 w-5 bg-red-200 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                <svg class="h-3 w-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">削除について</p>
+                                <p class="text-blue-700">部署を削除する前に、所属社員やDTEの移動が必要です</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* 入力フィールドのフォーカス時のアニメーション */
+input:focus, textarea:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* チェックボックスのカスタムスタイル */
+input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+}
+
+/* ボタンのホバーエフェクト */
+button[type="submit"]:hover {
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* スムーズな遷移効果 */
+* {
+    transition: all 0.2s ease-in-out;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+    .grid-cols-1.md\\:grid-cols-2 {
+        gap: 1rem;
+    }
+    
+    .px-8 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .py-8 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+}
+</style>
 {% endblock %}
