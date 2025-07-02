@@ -13,9 +13,17 @@ def department_pie_chart(request):
     department_names = Employee.objects.filter(department__isnull=False).values_list('department__name', flat=True)
     department_counts = Counter(department_names)
 
+    #department別の数を集計
     labels = list(department_counts.keys())
     data = list(department_counts.values())
 
+    #dte別の数を集計
+    dte_names = Employee.objects.filter(dte__isnull=False).values_list('dte__name', flat=True)
+    dte_counts = Counter(dte_names)
+    dte_labels = list(dte_counts.keys())
+    dte_data = list(dte_counts.values())
+
+    #新卒中途の数を前職履歴登録したかで集計
     profiles = EmployeeProfile.objects.annotate(pre_count=Count('pre_employment_histories'))
     mid_career_count = profiles.filter(pre_count__gt=0).count()
     new_graduate_count = profiles.filter(pre_count=0).count()
@@ -27,5 +35,7 @@ def department_pie_chart(request):
         'data': data,
         'bar_labels': json.dumps(bar_labels, ensure_ascii=False),
         'bar_data': bar_data,
+        'dte_labels': json.dumps(dte_labels, ensure_ascii=False),
+        'dte_data': dte_data,
     }
     return render(request, 'stats/department_pie_chart.html', context)
