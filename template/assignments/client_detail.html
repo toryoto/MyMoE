@@ -2,17 +2,20 @@
 
 {% block title %}{{ client.name }} - クライアント詳細 - MyMoE{% endblock %}
 
+{% block main_classes %}max-w-full{% endblock %}
+
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
     <!-- ブレッドクラム -->
-    <nav class="flex mb-8" aria-label="Breadcrumb">
+    <nav class="flex mb-6 sm:mb-8" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{% url 'assignments:project_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
-                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <a href="{% url 'assignments:project_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors">
+                    <svg class="mr-1 sm:mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                     </svg>
-                    プロジェクト管理
+                    <span class="hidden sm:inline">プロジェクト管理</span>
+                    <span class="sm:hidden">管理</span>
                 </a>
             </li>
             <li>
@@ -20,7 +23,10 @@
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <a href="{% url 'assignments:client_list' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ml-2">クライアント一覧</a>
+                    <a href="{% url 'assignments:client_list' %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ml-2 transition-colors">
+                        <span class="hidden sm:inline">クライアント一覧</span>
+                        <span class="sm:hidden">一覧</span>
+                    </a>
                 </div>
             </li>
             <li>
@@ -28,7 +34,7 @@
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ client.name }}</span>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 truncate">{{ client.name }}</span>
                 </div>
             </li>
         </ol>
@@ -36,58 +42,75 @@
 
     <!-- クライアントヘッダー -->
     <div class="bg-white shadow rounded-lg mb-6">
-        <div class="px-6 py-6">
-            <div class="sm:flex sm:items-center sm:justify-between">
-                <div class="sm:flex sm:items-center">
-                    <div class="flex-shrink-0">
-                        <div class="h-16 w-16 rounded-xl bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center shadow-lg">
-                            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-4 sm:p-6">
+            <!-- モバイル：縦並び、デスクトップ：横並び -->
+            <div class="space-y-4 lg:space-y-0 lg:flex lg:items-start lg:justify-between">
+                
+                <!-- 左側：クライアント情報 -->
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6">
+                    <!-- アイコン -->
+                    <div class="flex-shrink-0 mx-auto sm:mx-0">
+                        <div class="h-16 w-16 lg:h-20 lg:w-20 rounded-xl bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center shadow-lg">
+                            <svg class="h-8 w-8 lg:h-10 lg:w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
                             </svg>
                         </div>
                     </div>
-                    <div class="mt-4 sm:mt-0 sm:ml-6">
-                        <div class="flex items-center space-x-3">
-                            <h1 class="text-2xl font-bold text-gray-900">{{ client.name }}</h1>
-                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium {% if client.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
-                                {% if client.is_active %}アクティブ{% else %}非アクティブ{% endif %}
-                            </span>
+                    
+                    <!-- クライアント詳細 -->
+                    <div class="text-center sm:text-left flex-1 min-w-0">
+                        <!-- タイトル行 -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-center sm:justify-start space-y-2 sm:space-y-0 sm:space-x-3">
+                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 truncate">{{ client.name }}</h1>
+                            <div class="flex justify-center sm:justify-start">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if client.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                    {% if client.is_active %}アクティブ{% else %}非アクティブ{% endif %}
+                                </span>
+                            </div>
                         </div>
-                        <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600">
+                        
+                        <!-- 詳細情報 -->
+                        <div class="mt-2 flex flex-col sm:flex-row sm:items-center justify-center sm:justify-start space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-600">
                             {% if client.industry %}
-                            <div class="flex items-center">
+                            <div class="flex items-center justify-center sm:justify-start">
                                 <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
                                 </svg>
-                                <span class="font-medium">業界:</span> {{ client.get_industry_display }}
+                                <span class="font-medium">業界:</span> 
+                                <span class="ml-1">{{ client.get_industry_display }}</span>
                             </div>
                             {% endif %}
-                            <div class="flex items-center">
+                            <div class="flex items-center justify-center sm:justify-start">
                                 <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                 </svg>
-                                {{ projects.count }}個のプロジェクト
+                                <span>{{ projects.count }}個のプロジェクト</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-5 sm:mt-0">
-                    <a href="{% url 'assignments:client_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                
+                <!-- 右側：アクションボタン -->
+                <div class="w-full sm:w-auto lg:flex-shrink-0">
+                    <a href="{% url 'assignments:client_list' %}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
                         <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
-                        クライアント一覧に戻る
+                        <span class="hidden sm:inline">クライアント一覧に戻る</span>
+                        <span class="sm:hidden">一覧に戻る</span>
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- プロジェクト一覧 -->
+    <!-- メインコンテンツ：レスポンシブレイアウト -->
+    <div class="space-y-6 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0">
+        
+        <!-- プロジェクト一覧（モバイル：上部、デスクトップ：左2列） -->
         <div class="lg:col-span-2">
             <div class="bg-white shadow rounded-lg">
-                <div class="px-6 py-4 border-b border-gray-200">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-900">プロジェクト一覧</h3>
                         <span class="text-sm text-gray-500">{{ projects.count }}件</span>
@@ -95,14 +118,15 @@
                 </div>
                 
                 {% if projects %}
-                <div class="divide-y divide-gray-200">
+                <!-- デスクトップ用リスト -->
+                <div class="hidden sm:block divide-y divide-gray-200">
                     {% for project in projects %}
-                    <div class="px-6 py-4 hover:bg-gray-50">
+                    <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
                         <div class="flex items-center justify-between">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center space-x-3">
-                                    <h4 class="text-lg font-medium text-gray-900 truncate">
-                                        <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600">
+                                    <h4 class="text-base font-medium text-gray-900 truncate">
+                                        <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600 transition-colors">
                                             {{ project.name }}
                                         </a>
                                     </h4>
@@ -141,7 +165,7 @@
                             </div>
                             
                             <div class="flex-shrink-0 ml-4">
-                                <a href="{% url 'assignments:project_detail' project.pk %}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <a href="{% url 'assignments:project_detail' project.pk %}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
                                     詳細を見る
                                 </a>
                             </div>
@@ -149,8 +173,73 @@
                     </div>
                     {% endfor %}
                 </div>
+
+                <!-- モバイル用カードレイアウト -->
+                <div class="sm:hidden">
+                    {% for project in projects %}
+                    <div class="border-b border-gray-200 px-4 py-4 last:border-b-0 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-900 truncate">
+                                    <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600 transition-colors">{{ project.name }}</a>
+                                </h4>
+                            </div>
+                            <div class="flex-shrink-0 ml-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {% if project.status == 'active' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ project.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <!-- 期間 -->
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-gray-600">
+                                    {{ project.start_date|date:"Y/m/d" }}
+                                    {% if project.end_date %}
+                                        〜 {{ project.end_date|date:"Y/m/d" }}
+                                    {% else %}
+                                        〜 進行中
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <!-- 責任者 -->
+                            {% if project.manager %}
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="text-gray-600">{{ project.manager.get_full_name|default:project.manager.username }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- アサイン数 -->
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span class="text-gray-600">{{ project.assignments.count }}名アサイン</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 text-right">
+                            <a href="{% url 'assignments:project_detail' project.pk %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 hover:text-primary-700 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                詳細
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
                 {% else %}
-                <div class="px-6 py-12 text-center">
+                <div class="px-4 sm:px-6 py-12 text-center">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
@@ -161,14 +250,14 @@
             </div>
         </div>
 
-        <!-- サイドバー：統計情報 -->
+        <!-- サイドバー（モバイル：下部、デスクトップ：右1列） -->
         <div class="space-y-6">
             <!-- プロジェクト統計 -->
             <div class="bg-white shadow rounded-lg">
-                <div class="px-6 py-4 border-b border-gray-200">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">プロジェクト統計</h3>
                 </div>
-                <div class="px-6 py-4 space-y-4">
+                <div class="px-4 sm:px-6 py-4 space-y-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
@@ -199,14 +288,14 @@
             <!-- 最近のプロジェクト -->
             {% if projects %}
             <div class="bg-white shadow rounded-lg">
-                <div class="px-6 py-4 border-b border-gray-200">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">最新のプロジェクト</h3>
                 </div>
-                <div class="px-6 py-4">
+                <div class="px-4 sm:px-6 py-4">
                     {% for project in projects|slice:":3" %}
                     <div class="{% if not forloop.last %}mb-4 pb-4 border-b border-gray-200{% endif %}">
-                        <h4 class="text-sm font-medium text-gray-900">
-                            <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600">
+                        <h4 class="text-sm font-medium text-gray-900 truncate">
+                            <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600 transition-colors">
                                 {{ project.name }}
                             </a>
                         </h4>
@@ -224,13 +313,13 @@
 
             <!-- クライアント情報 -->
             <div class="bg-white shadow rounded-lg">
-                <div class="px-6 py-4 border-b border-gray-200">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
                     <h3 class="text-lg font-medium text-gray-900">クライアント情報</h3>
                 </div>
-                <div class="px-6 py-4 space-y-3">
+                <div class="px-4 sm:px-6 py-4 space-y-3">
                     <div>
                         <dt class="text-sm font-medium text-gray-500">クライアント名</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ client.name }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900 break-words">{{ client.name }}</dd>
                     </div>
                     {% if client.industry %}
                     <div>

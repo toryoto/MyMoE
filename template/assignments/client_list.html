@@ -2,16 +2,18 @@
 
 {% block title %}クライアント一覧 - MyMoE{% endblock %}
 
+{% block main_classes %}max-w-full{% endblock %}
+
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
     <!-- ページヘッダー -->
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 space-y-4 sm:space-y-0">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">クライアント一覧</h1>
-            <p class="mt-2 text-lg text-gray-600">登録されているクライアントとプロジェクト情報</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">クライアント一覧</h1>
+            <p class="mt-1 sm:mt-2 text-base sm:text-lg text-gray-600">登録されているクライアントとプロジェクト情報</p>
         </div>
-        <div class="flex space-x-3">
-            <a href="{% url 'assignments:project_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <div class="w-full sm:w-auto">
+            <a href="{% url 'assignments:project_list' %}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -22,36 +24,54 @@
 
     <!-- 検索・フィルター -->
     <div class="bg-white shadow rounded-lg mb-6">
-        <div class="px-6 py-4">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-4 sm:p-6">
+            <form method="get" class="space-y-4">
+                <!-- メイン検索入力 -->
                 <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">クライアント名で検索</label>
-                    <input type="text" id="search" name="search" value="{{ current_search }}" 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                           placeholder="クライアント名を入力...">
+                    <label for="search-input" class="block text-sm font-medium text-gray-700 mb-2">キーワード検索</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" id="search-input" name="search" value="{{ current_search }}" 
+                               placeholder="クライアント名で検索..."
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- フィルターオプション -->
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">フィルター</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="industry-filter" class="block text-sm font-medium text-gray-700 mb-1">業界</label>
+                            <select id="industry-filter" name="industry" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                                <option value="">すべての業界</option>
+                                {% for value, label in industry_choices %}
+                                <option value="{{ value }}" {% if current_industry == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 
-                <div>
-                    <label for="industry" class="block text-sm font-medium text-gray-700 mb-2">業界で絞り込み</label>
-                    <select id="industry" name="industry" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
-                        <option value="">すべての業界</option>
-                        {% for value, label in industry_choices %}
-                        <option value="{{ value }}" {% if current_industry == value %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="flex items-end space-x-2">
-                    <button type="submit" class="flex-1 bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
-                        <svg class="inline-block mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <!-- 検索ボタン行 -->
+                <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                    <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                         検索
                     </button>
-                    <a href="{% url 'assignments:client_list' %}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
-                        クリア
+                    <a href="{% url 'assignments:client_list' %}" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        リセット
                     </a>
                 </div>
             </form>
@@ -60,7 +80,7 @@
 
     <!-- クライアント一覧 -->
     <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-medium text-gray-900">クライアント</h3>
                 <span class="text-sm text-gray-500">{{ clients.count }}件の結果</span>
@@ -68,7 +88,8 @@
         </div>
         
         {% if clients %}
-        <div class="overflow-hidden">
+        <!-- デスクトップ用テーブル -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -91,7 +112,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for client in clients %}
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10">
@@ -142,8 +163,72 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- モバイル用カードレイアウト -->
+        <div class="md:hidden">
+            {% for client in clients %}
+            <div class="border-b border-gray-200 px-4 py-4 last:border-b-0 hover:bg-gray-50 transition-colors">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                        <div class="flex-shrink-0">
+                            <div class="h-12 w-12 rounded-lg bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center">
+                                <span class="text-sm font-bold text-white">
+                                    {{ client.name|slice:":1"|upper }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-medium text-gray-900 truncate">
+                                <a href="{% url 'assignments:client_detail' client.pk %}" class="hover:text-primary-600">{{ client.name }}</a>
+                            </h3>
+                            {% if client.industry %}
+                            <p class="text-xs text-gray-500 mt-1">{{ client.get_industry_display }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 ml-3">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {% if client.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {% if client.is_active %}アクティブ{% else %}非アクティブ{% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <!-- 業界バッジ（モバイル用） -->
+                    {% if client.industry %}
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
+                        </svg>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ client.get_industry_display }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- プロジェクト数 -->
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span class="text-gray-600">プロジェクト数: {{ client.project_count }}</span>
+                    </div>
+                </div>
+                
+                <div class="mt-3 text-right">
+                    <a href="{% url 'assignments:client_detail' client.pk %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 hover:text-primary-700 transition-colors">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        詳細
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
-        <div class="px-6 py-12 text-center">
+        <div class="px-4 sm:px-6 py-12 text-center">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
             </svg>
@@ -161,34 +246,46 @@
 
     <!-- ページネーション -->
     {% if is_paginated %}
-    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6">
+    <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow-sm" aria-label="Pagination">
+        <!-- モバイル用ページネーション -->
         <div class="flex-1 flex justify-between sm:hidden">
             {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <a href="?page={{ page_obj.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
                 前へ
             </a>
             {% endif %}
+            
+            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 rounded-md">
+                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </span>
+            
             {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <a href="?page={{ page_obj.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                 次へ
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
             </a>
             {% endif %}
         </div>
+        
+        <!-- デスクトップ用ページネーション -->
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-                <p class="text-sm text-gray-700">
-                    <span class="font-medium">{{ page_obj.start_index }}</span>
-                    から
-                    <span class="font-medium">{{ page_obj.end_index }}</span>
-                    まで
-                    <span class="font-medium">{{ page_obj.paginator.count }}</span>
-                    件中
-                </p>
+            <div class="text-sm text-gray-700">
+                <span class="font-medium">{{ page_obj.start_index }}</span>
+                -
+                <span class="font-medium">{{ page_obj.end_index }}</span>
+                件目 / 全
+                <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                件
             </div>
             <div>
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <a href="?page={{ page_obj.previous_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
                         <span class="sr-only">Previous</span>
                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -202,14 +299,14 @@
                         {{ num }}
                     </span>
                     {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{ num }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <a href="?page={{ num }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         {{ num }}
                     </a>
                     {% endif %}
                     {% endfor %}
                     
                     {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <a href="?page={{ page_obj.next_page_number }}{% if current_search %}&search={{ current_search }}{% endif %}{% if current_industry %}&industry={{ current_industry }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
                         <span class="sr-only">Next</span>
                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -219,7 +316,7 @@
                 </nav>
             </div>
         </div>
-    </div>
+    </nav>
     {% endif %}
 </div>
 {% endblock %}
