@@ -33,6 +33,7 @@ urlpatterns = [
     path('mymoe/', mymoe_home, name='mymoe_home'),
     path('', index, name='home'),
     path('hr/', include(('employees.urls', 'employees'), namespace='hr')),
+    path('stats/', include('stats.urls')),
 ]
 
 if settings.DEBUG:

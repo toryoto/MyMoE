@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">統計情報</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
+        <!-- 部署（Department）別 社員数 -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">部署（Department）別 社員数</h2>
+            <div class="chart-container" style="position: relative; height:300px; width:100%">
+                <canvas id="deptPieChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 所属DTE別 社員数 -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">所属DTE別 社員数</h2>
+            <div class="chart-container" style="position: relative; height:300px; width:100%">
+                <canvas id="dtePieChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 新卒/中途 採用者数 -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">新卒/中途 採用者数</h2>
+            <div class="chart-container" style="position: relative; height:300px; width:100%">
+                <canvas id="recruitBarChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 部署別 新卒・中途採用者数 -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">部署別 新卒・中途採用者数</h2>
+            <div class="chart-container" style="position: relative; height:300px; width:100%">
+                <canvas id="stackedBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- 部署別MLレベル分布（ヒートマップ） -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6 lg:col-span-2">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">部署別 MLレベル分布</h2>
+            <div class="chart-container" style="position: relative; height:400px; width:100%">
+                <canvas id="mlHeatmapChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- クライアント業界別プロジェクト数 -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">クライアント業界別 プロジェクト数</h2>
+            <div class="chart-container" style="position: relative; height:350px; width:100%">
+                <canvas id="industryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 人気スキルランキング -->
+        <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">人気スキル TOP5</h2>
+            <div class="chart-container" style="position: relative; height:350px; width:100%">
+                <canvas id="skillChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script>
+    // Chart.jsのグローバル設定
+    Chart.defaults.font.family = "'Noto Sans JP', 'Inter', sans-serif";
+    Chart.defaults.color = '#4B5563'; // gray-700
+
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                titleFont: {
+                    size: 14,
+                    weight: 'bold'
+                },
+                bodyFont: {
+                    size: 12
+                },
+                padding: 10,
+                cornerRadius: 4
+            }
+        }
+    };
+
+    // 部署（Department）別 社員数
+    const deptPieCtx = document.getElementById('deptPieChart').getContext('2d');
+    new Chart(deptPieCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ labels| safe }},
+            datasets: [{
+                label: '社員数',
+                data: {{ data| safe }},
+                backgroundColor: [
+                    '#EC4899', '#F472B6', '#FDA4AF', '#FECACA', '#FDF2F8', '#FCE7F3', '#F9A8D4', '#BE185D'
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: commonOptions
+    });
+
+    // 所属DTE別 社員数
+    const dtePieCtx = document.getElementById('dtePieChart').getContext('2d');
+    new Chart(dtePieCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ dte_labels| safe }},
+            datasets: [{
+                label: '社員数',
+                data: {{ dte_data| safe }},
+                backgroundColor: [
+                    '#F472B6', '#EC4899', '#FDA4AF', '#F9A8D4', '#FCE7F3', '#FECACA', '#FDF2F8', '#BE185D'
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: commonOptions
+    });
+
+    // 新卒/中途 採用者数
+    const recruitBarCtx = document.getElementById('recruitBarChart').getContext('2d');
+    new Chart(recruitBarCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ bar_labels| safe }},
+            datasets: [{
+                label: '人数',
+                data: {{ bar_data| safe }},
+                backgroundColor: ['#F9A8D4', '#EC4899'],
+                borderColor: '#ffffff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            ...commonOptions,
+            plugins: {
+                ...commonOptions.plugins,
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: '#E5E7EB' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    const stackedBarCtx = document.getElementById('stackedBarChart').getContext('2d');
+    new Chart(stackedBarCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ stacked_bar_labels| safe }},
+            datasets: [
+                {
+                    label: '新卒',
+                    data: {{ stacked_bar_new_graduate_data| safe }},
+                    backgroundColor: '#F9A8D4',
+                    borderColor: '#ffffff',
+                    borderWidth: 1
+                },
+                {
+                    label: '中途',
+                    data: {{ stacked_bar_mid_career_data| safe }},
+                    backgroundColor: '#EC4899',
+                    borderColor: '#ffffff',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: '#E5E7EB' }
+                }
+            }
+        }
+    });
+
+    const mlHeatmapCtx = document.getElementById('mlHeatmapChart').getContext('2d');
+    const mlHeatmapData = {{ ml_heatmap_data| safe }};
+    const mlLevels = {{ ml_levels| safe }};
+    const deptNames = {{ dept_names_heatmap| safe }};
+
+    // ヒートマップデータを棒グラフ用に変換
+    const mlDatasets = mlLevels.map((level, index) => {
+        // ピンク系のカラーパレット
+        const pinkColors = [
+            '#FDF2F8', '#FCE7F3', '#FBCFE8', '#F9A8D4', '#F472B6', 
+            '#EC4899', '#DB2777', '#BE185D', '#9D174D', '#831843', '#6B1E3F'
+        ];
+        return {
+            label: `ML ${level}`,
+            data: mlHeatmapData.map(dept => dept[index]),
+            backgroundColor: pinkColors[index] || '#EC4899',
+            borderColor: '#ffffff',
+            borderWidth: 1
+        };
+    });
+
+    new Chart(mlHeatmapCtx, {
+        type: 'bar',
+        data: {
+            labels: deptNames,
+            datasets: mlDatasets
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: '#E5E7EB' }
+                }
+            },
+            plugins: {
+                ...commonOptions.plugins,
+                legend: {
+                    position: 'top',
+                    labels: {
+                        padding: 10,
+                        font: { size: 11 }
+                    }
+                },
+                tooltip: {
+                    ...commonOptions.plugins.tooltip,
+                    callbacks: {
+                        title: function(context) {
+                            return `${context[0].label} - ${context[0].dataset.label}`;
+                        },
+                        label: function(context) {
+                            return `人数: ${context.parsed.y}人`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const industryCtx = document.getElementById('industryChart').getContext('2d');
+    new Chart(industryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ industry_labels| safe }},
+            datasets: [{
+                label: 'プロジェクト数',
+                data: {{ industry_data| safe }},
+                backgroundColor: [
+                    '#EC4899', '#F472B6', '#FDA4AF', '#F9A8D4', '#FCE7F3', '#FECACA', '#FDF2F8', '#BE185D'
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            ...commonOptions,
+            plugins: {
+                ...commonOptions.plugins,
+                tooltip: {
+                    ...commonOptions.plugins.tooltip,
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed * 100) / total).toFixed(1);
+                            return `${context.label}: ${context.parsed}件 (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const skillCtx = document.getElementById('skillChart').getContext('2d');
+    new Chart(skillCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ skill_labels| safe }},
+            datasets: [{
+                label: '保有者数',
+                data: {{ skill_data| safe }},
+                backgroundColor: '#F9A8D4',
+                borderColor: '#EC4899',
+                borderWidth: 1,
+                borderRadius: 4,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            ...commonOptions,
+            indexAxis: 'y',
+            plugins: {
+                ...commonOptions.plugins,
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 },
+                    grid: { color: '#E5E7EB' }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
