@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div style="max-width: 400px; margin: auto;">
 <h2 class="text-2xl font-semibold mb-4">部署（Department）別 社員数</h2>
 <canvas id="deptPieChart" width="400" height="400"></canvas>
 
@@ -9,7 +10,7 @@
 
 <h2 class="text-2xl font-semibold mt-10 mb-4">新卒/中途 採用者数</h2>
 <canvas id="recruitBarChart" width="400" height="300"></canvas>
-
+</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 
@@ -75,7 +76,9 @@
             scales: {
             y: {
                 beginAtZero: true,
-                    precision: 0
+                ticks:{
+                    stepSize:1
+                }
             }
         },
         plugins: {

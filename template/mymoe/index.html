@@ -146,6 +146,30 @@
     </div>
     {% endif %}
 
+<!-- データ -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow flex flex-col min-h-[170px]">
+    <div class="flex items-center">
+        <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg flex items-center justify-center">
+                <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6v12M12 4v14M20 10v8"/>
+                </svg>
+            </div>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-base font-medium text-gray-900">データ</h3>
+            <p class="text-xs text-gray-500">社員情報の可視化</p>
+        </div>
+    </div>
+    <div class="mt-auto pt-4">
+        <a href="{% url 'stats:department_pie_chart' %}"
+           class="inline-flex items-center justify-center w-full px-4 py-2 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-lg hover:bg-emerald-200 transition-colors border border-gray-200">
+            表示
+        </a>
+    </div>
+</div>
+
     <!-- お知らせ -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:col-span-2 lg:col-span-1">
         <h2 class="text-base font-medium text-gray-900 mb-2">お知らせ</h2>
