@@ -2,17 +2,19 @@
 
 {% block title %}プロジェクト管理 - MyMoE{% endblock %}
 
+{% block main_classes %}max-w-full{% endblock %}
+
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- ページヘッダー -->
-    <div class="flex items-center justify-between mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">プロジェクト管理</h1>
-            <p class="mt-2 text-lg text-gray-600">進行中のプロジェクトとアサイン状況を管理</p>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8">
+        <div class="mb-4 sm:mb-0">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">プロジェクト管理</h1>
+            <p class="mt-1 sm:mt-2 text-base sm:text-lg text-gray-600">進行中のプロジェクトとアサイン状況を管理</p>
         </div>
         {% if user.is_staff or user.is_hr %}
-        <div class="flex space-x-3">
-            <a href="{% url 'assignments:project_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <div class="w-full sm:w-auto">
+            <a href="{% url 'assignments:project_create' %}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
                 <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -23,116 +25,139 @@
     </div>
 
     <!-- クイックナビゲーション -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <a href="{% url 'assignments:project_list' %}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        <a href="{% url 'assignments:project_list' %}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">総プロジェクト数</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ projects.count }}</p>
+                <div class="ml-3 sm:ml-4 min-w-0">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">総プロジェクト数</p>
+                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ projects.count }}</p>
                 </div>
             </div>
         </a>
 
-        <a href="{% url 'assignments:client_list' %}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <a href="{% url 'assignments:client_list' %}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4M7 7h10M7 11h4" />
                         </svg>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">クライアント数</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ clients.count }}</p>
+                <div class="ml-3 sm:ml-4 min-w-0">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">クライアント数</p>
+                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ clients.count }}</p>
                 </div>
             </div>
         </a>
 
-        <a href="{% url 'assignments:my_assignment_list' %}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <a href="{% url 'assignments:my_assignment_list' %}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">自分のアサイン</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ user.assignments.count }}</p>
+                <div class="ml-3 sm:ml-4 min-w-0">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">自分のアサイン</p>
+                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ user.assignments.count }}</p>
                 </div>
             </div>
         </a>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 sm:w-6 sm:h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">進行中</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ projects|length }}</p>
+                <div class="ml-3 sm:ml-4 min-w-0">
+                    <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">進行中</p>
+                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ projects|length }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 検索・フィルターセクション -->
-    <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
+    <div class="bg-white shadow-sm rounded-lg p-4 sm:p-6 mb-6">
         <form method="GET" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
-                    <input type="text" id="search" name="search" value="{{ current_search }}" placeholder="プロジェクト名、クライアント名..." class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="client" class="block text-sm font-medium text-gray-700 mb-1">クライアント</label>
-                    <select id="client" name="client" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                        <option value="">全て</option>
-                        {% for client in clients %}
-                            <option value="{{ client.id }}" {% if client.id|stringformat:"s" == current_client %}selected{% endif %}>{{ client.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
-                    <select id="status" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                        <option value="">全て</option>
-                        {% for value, label in status_choices %}
-                            <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <!-- メイン検索入力 -->
+            <div class="mb-4 sm:mb-6">
+                <label for="search-input" class="block text-sm font-medium text-gray-700 mb-2">キーワード検索</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        検索
-                    </button>
+                    </div>
+                    <input type="text" id="search-input" name="search" value="{{ current_search }}" placeholder="プロジェクト名、クライアント名などで検索..." class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                 </div>
+            </div>
+
+            <!-- フィルターオプション -->
+            <div class="mb-4 sm:mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-3">フィルター</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label for="client-filter" class="block text-sm font-medium text-gray-700 mb-1">クライアント</label>
+                        <select id="client-filter" name="client" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                            <option value="">全て</option>
+                            {% for client in clients %}
+                                <option value="{{ client.id }}" {% if client.id|stringformat:"s" == current_client %}selected{% endif %}>{{ client.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
+                        <select id="status-filter" name="status" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
+                            <option value="">全て</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 検索ボタン行 -->
+            <div class="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    検索
+                </button>
+                <a href="{% url 'assignments:project_list' %}" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    リセット
+                </a>
             </div>
         </form>
     </div>
 
     <!-- プロジェクト一覧 -->
     <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-medium text-gray-900">プロジェクト一覧</h3>
         </div>
-        <div class="overflow-x-auto">
+
+        <!-- デスクトップ用テーブル -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -147,12 +172,10 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for project in projects %}
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-6 py-4">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">
-                                    <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600">{{ project.name }}</a>
-                                </div>
+                            <div class="text-sm font-medium text-gray-900">
+                                <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600">{{ project.name }}</a>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -214,11 +237,91 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- モバイル用カードレイアウト -->
+        <div class="md:hidden">
+            {% for project in projects %}
+            <div class="border-b border-gray-200 px-4 py-4 hover:bg-gray-50 transition-colors">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-medium text-gray-900 truncate">
+                            <a href="{% url 'assignments:project_detail' project.pk %}" class="hover:text-primary-600">{{ project.name }}</a>
+                        </h4>
+                        <p class="mt-1 text-sm text-gray-600">{{ project.client.name }}</p>
+                        {% if project.client.industry %}
+                        <p class="text-xs text-gray-500">{{ project.client.get_industry_display }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="flex-shrink-0 ml-3">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {% if project.status == 'active' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ project.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="mt-3 space-y-2">
+                    <!-- 責任者 -->
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {% if project.manager %}
+                            <span class="text-gray-600">{{ project.manager.get_full_name|default:project.manager.username }}</span>
+                        {% else %}
+                            <span class="text-gray-500">責任者未設定</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 期間 -->
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-gray-600">
+                            {{ project.start_date|date:"Y/m/d" }}
+                            {% if project.end_date %}
+                                〜 {{ project.end_date|date:"Y/m/d" }}
+                            {% else %}
+                                〜 進行中
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <!-- アサイン数 -->
+                    <div class="flex items-center text-sm">
+                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="text-gray-600">{{ project.assignments.count }}名</span>
+                    </div>
+                </div>
+                
+                <div class="mt-3 text-right">
+                    <a href="{% url 'assignments:project_detail' project.pk %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 hover:text-primary-700 transition-colors">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        詳細
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-4 py-12 text-center">
+                <div class="text-gray-400">
+                    <svg class="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <p class="text-sm text-gray-500">条件に一致するプロジェクトが見つかりません。</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- ページネーション -->
     {% if is_paginated %}
-    <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow-sm">
+    <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow-sm" aria-label="Pagination">
         <div class="flex-1 flex justify-between items-center">
             <div class="text-sm text-gray-700">
                 <span class="font-medium">{{ page_obj.start_index }}</span>
@@ -230,7 +333,12 @@
             </div>
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">前へ</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    <svg class="w-4 h-4 mr-1 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    前へ
+                </a>
                 {% endif %}
                 
                 <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 rounded-md">
@@ -238,7 +346,12 @@
                 </span>
                 
                 {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">次へ</a>
+                <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    次へ
+                    <svg class="w-4 h-4 ml-1 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
                 {% endif %}
             </div>
         </div>

@@ -7,7 +7,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.colors import HexColor
 from reportlab.lib.units import cm
 from django.conf import settings
-from PIL import Image
+from PIL import Image, ImageDraw
 
 def _wrap_text(canvas_obj, text, font_name, font_size, max_width):
     """テキストを指定幅で折り返し"""
@@ -66,27 +66,34 @@ def generate_employee_profile_pdf(profile):
     if profile.photo and os.path.exists(profile.photo.path):
         try:
             img = Image.open(profile.photo.path)
-            # 画像を円形にクリップする処理はReportLabでは直接できないため、
-            # ここでは画像をそのまま描画し、円形マスクは適用しない。
-            # 必要であれば、PILで画像を事前に処理して保存し、その画像を読み込む。
-            # 簡単のため、ここでは画像をリサイズして中央に配置する。
-            img_width, img_height = img.size
-            aspect = img_height / float(img_width)
+            img = img.convert('RGBA')
             
-            # 円の直径に合わせて画像をリサイズ
-            target_size = photo_radius * 2
-            if img_width > img_height:
-                new_width = target_size
-                new_height = int(new_width * aspect)
-            else:
-                new_height = target_size
-                new_width = int(new_height / aspect)
+            # 画像を正方形にリサイズ
+            size = int(photo_radius * 2 * 72 / 2.54)  # Convert cm to pixels (assuming 72 DPI)
+            img = img.resize((size, size), Image.Resampling.LANCZOS)
             
-            # 画像を中央に配置するためのオフセット
-            img_draw_x = photo_x - new_width / 2
-            img_draw_y = photo_y - new_height / 2
+            # 円形マスクを作成
+            mask = Image.new('L', (size, size), 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, size, size), fill=255)
             
-            p.drawImage(profile.photo.path, img_draw_x, img_draw_y, width=new_width, height=new_height, mask='auto')
+            # マスクを適用
+            img.putalpha(mask)
+            
+            # 一時的にファイルに保存
+            temp_path = os.path.join(settings.MEDIA_ROOT, 'temp_circular_image.png')
+            img.save(temp_path, 'PNG')
+            
+            # 円形に切り抜いた画像を描画
+            img_draw_x = photo_x - photo_radius
+            img_draw_y = photo_y - photo_radius
+            
+            p.drawImage(temp_path, img_draw_x, img_draw_y, width=photo_radius*2, height=photo_radius*2, mask='auto')
+            
+            # 一時ファイルを削除
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+                
         except Exception as e:
             # 画像読み込み失敗時はイニシャルを表示
             p.setFillColor(HexColor('#3b82f6'))
