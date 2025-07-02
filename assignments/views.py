@@ -127,6 +127,8 @@ class ProjectListView(LoginRequiredMixin, ListView):
         context['current_search'] = self.request.GET.get('search', '')
         context['current_client'] = self.request.GET.get('client', '')
         context['current_status'] = self.request.GET.get('status', '')
+        context['active_projects_count'] = Project.objects.filter(status='active').count()
+        context['total_projects_count'] = Project.objects.count()
         return context
 
 

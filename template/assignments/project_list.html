@@ -37,7 +37,7 @@
                 </div>
                 <div class="ml-3 sm:ml-4 min-w-0">
                     <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">総プロジェクト数</p>
-                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ projects.count }}</p>
+                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ total_projects_count }}</p>
                 </div>
             </div>
         </a>
@@ -85,7 +85,7 @@
                 </div>
                 <div class="ml-3 sm:ml-4 min-w-0">
                     <p class="text-xs sm:text-sm font-medium text-gray-500 truncate">進行中</p>
-                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ projects|length }}</p>
+                    <p class="text-lg sm:text-2xl font-semibold text-gray-900">{{ active_projects_count }}</p>
                 </div>
             </div>
         </div>
