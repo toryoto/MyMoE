@@ -136,6 +136,9 @@ LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/mymoe/'
 LOGOUT_REDIRECT_URL = '/'
 
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+SESSION_SAVE_EVERY_REQUEST = True
+
 
 import os 
 MEDIA_URL = '/media/'
