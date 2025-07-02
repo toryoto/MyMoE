@@ -5,27 +5,24 @@ from django.contrib.auth import authenticate, login
 from employees.views import mymoe_home
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
 
 def index(request):
     if request.user.is_authenticated:
         return redirect('mymoe_home')
-    
+
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            # 初回ログインチェック
             if getattr(user, 'force_password_change', False):
                 return redirect('employees:force_password_change')
             return redirect('mymoe_home')
-        else:
-            messages.error(request, 'Invalid username or password.')
-    
-    return render(request, 'index.html')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'index.html', {'form': form})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
