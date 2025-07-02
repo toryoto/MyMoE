@@ -177,22 +177,36 @@
                                 <p class="text-sm font-medium text-gray-900">{{ user.get_full_name|default:user.username }}</p>
                                 <p class="text-xs text-gray-500">{{ user.email }}</p>
                             </div>
-                            <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                                <span class="text-sm font-medium text-primary-600">
-                                    {{ user.username|slice:":1"|upper }}
-                                </span>
-                            </div>
+                            <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="block flex-shrink-0">
+                                {% if user.employeeprofile.photo %}
+                                    <img src="{{ user.employeeprofile.photo.url }}" alt="{{ user.get_full_name|default:user.username }}" class="h-8 w-8 rounded-full object-cover bg-gray-200">
+                                {% else %}
+                                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                                        <span class="text-sm font-medium text-primary-600">
+                                            {{ user.username|slice:":1"|upper }}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </a>
                         </div>
                         
                         <!-- モバイル用ユーザーアバター -->
-                        <div class="sm:hidden h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center mr-3">
-                            <span class="text-sm font-medium text-primary-600">
-                                {{ user.username|slice:":1"|upper }}
-                            </span>
+                        <div class="sm:hidden mr-3">
+                            <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="block">
+                                {% if user.employeeprofile.photo %}
+                                    <img src="{{ user.employeeprofile.photo.url }}" alt="{{ user.get_full_name|default:user.username }}" class="h-8 w-8 rounded-full object-cover bg-gray-200">
+                                {% else %}
+                                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                                        <span class="text-sm font-medium text-primary-600">
+                                            {{ user.username|slice:":1"|upper }}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </a>
                         </div>
                         
                         <!-- ログアウトボタン -->
-                        <form action="{% url 'employees:logout' %}" method="post" class="inline">
+                        <form action="{% url 'employees:logout' %}" method="post" class="inline ml-4">
                             {% csrf_token %}
                             <button type="submit" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                 <span class="hidden sm:inline">Logout</span>
@@ -309,11 +323,17 @@
                 <!-- ユーザー情報（モバイル） -->
                 <div class="mb-6 p-3 bg-white/10 rounded-lg">
                     <div class="flex items-center space-x-3">
-                        <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
-                            <span class="text-white font-medium">
-                                {{ user.username|slice:":1"|upper }}
-                            </span>
-                        </div>
+                        <a href="{% url 'profiles:employee_profile_detail' pk=user.pk %}" class="block flex-shrink-0">
+                            {% if user.employeeprofile.photo %}
+                                <img src="{{ user.employeeprofile.photo.url }}" alt="{{ user.get_full_name|default:user.username }}" class="h-10 w-10 rounded-full object-cover bg-gray-200">
+                            {% else %}
+                                <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                                    <span class="text-white font-medium">
+                                        {{ user.username|slice:":1"|upper }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </a>
                         <div>
                             <p class="text-white font-medium text-sm">{{ user.get_full_name|default:user.username }}</p>
                             <p class="text-white/80 text-xs">{{ user.email }}</p>
