@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}プロジェクト編集{% else %}プロジェクト作成{% endif %} - MyMoE
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- ブレッドクラム -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="{% url 'assignments:project_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600">
+                    <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    プロジェクト管理
+                </a>
+            </li>
+            {% if form.instance.pk %}
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{% url 'assignments:project_detail' form.instance.pk %}" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 md:ml-2">{{ form.instance.name }}</a>
+                </div>
+            </li>
+            {% endif %}
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                        {% if form.instance.pk %}編集{% else %}新規作成{% endif %}
+                    </span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ページヘッダー -->
+    <div class="mb-8">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-4">
+                <h1 class="text-2xl font-bold text-gray-900">
+                    {% if form.instance.pk %}
+                        プロジェクト編集: {{ form.instance.name }}
+                    {% else %}
+                        新規プロジェクト作成
+                    {% endif %}
+                </h1>
+                <p class="mt-1 text-sm text-gray-600">
+                    {% if form.instance.pk %}
+                        プロジェクト情報を更新してください
+                    {% else %}
+                        新しいプロジェクトの情報を入力してください
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- エラーメッセージ -->
+    {% if form.errors %}
+    <div class="mb-6 rounded-md bg-red-50 p-4">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">入力エラーがあります</h3>
+                <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc list-inside space-y-1">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- メインフォーム -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- 基本情報セクション -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">基本情報</h3>
+                <p class="mt-1 text-sm text-gray-500">プロジェクトの基本的な情報を入力してください。</p>
+            </div>
+
+            <div class="px-6 py-6 space-y-6">
+                <!-- クライアント -->
+                <div class="form-field">
+                    <label for="{{ form.client.id_for_label }}" class="form-label required">
+                        {{ form.client.label }}
+                    </label>
+                    <select id="{{ form.client.id_for_label }}" 
+                            name="{{ form.client.name }}" 
+                            class="form-select" 
+                            required>
+                        <option value="">クライアントを選択してください</option>
+                        {% for choice in form.client.field.queryset %}
+                            <option value="{{ choice.pk }}" 
+                                    {% if form.client.value == choice.pk %}selected{% endif %}>
+                                {{ choice.name }}
+                                {% if choice.industry %}({{ choice.get_industry_display }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.client.errors %}
+                        <div class="mt-2">
+                            {% for error in form.client.errors %}
+                                <p class="error-message">
+                                    <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- プロジェクト名 -->
+                <div class="form-field">
+                    <label for="{{ form.name.id_for_label }}" class="form-label required">
+                        {{ form.name.label }}
+                    </label>
+                    <input type="text" 
+                           id="{{ form.name.id_for_label }}" 
+                           name="{{ form.name.name }}" 
+                           value="{{ form.name.value|default:'' }}"
+                           class="form-input"
+                           placeholder="例: ERP基盤更改プロジェクト"
+                           required>
+                    {% if form.name.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.name.help_text }}</p>
+                    {% endif %}
+                    {% if form.name.errors %}
+                        <div class="mt-2">
+                            {% for error in form.name.errors %}
+                                <p class="error-message">
+                                    <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- プロジェクト責任者 -->
+                <div class="form-field">
+                    <label for="{{ form.manager.id_for_label }}" class="form-label">
+                        {{ form.manager.label }}
+                    </label>
+                    <select id="{{ form.manager.id_for_label }}" 
+                            name="{{ form.manager.name }}" 
+                            class="form-select">
+                        <option value="">プロジェクト責任者を選択してください（任意）</option>
+                        {% for choice in form.manager.field.queryset %}
+                            <option value="{{ choice.pk }}" 
+                                    {% if form.manager.value == choice.pk %}selected{% endif %}>
+                                {{ choice.get_full_name|default:choice.username }}
+                                {% if choice.department %}({{ choice.department.name }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.manager.help_text %}
+                        <p class="mt-2 text-sm text-gray-500">{{ form.manager.help_text }}</p>
+                    {% endif %}
+                    {% if form.manager.errors %}
+                        <div class="mt-2">
+                            {% for error in form.manager.errors %}
+                                <p class="error-message">
+                                    <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 期間設定 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 開始日 -->
+                    <div class="form-field">
+                        <label for="{{ form.start_date.id_for_label }}" class="form-label required">
+                            {{ form.start_date.label }}
+                        </label>
+                        <input type="date" 
+                               id="{{ form.start_date.id_for_label }}" 
+                               name="{{ form.start_date.name }}" 
+                               value="{{ form.start_date.value|date:'Y-m-d'|default:'' }}"
+                               class="form-input"
+                               required>
+                        {% if form.start_date.errors %}
+                            <div class="mt-2">
+                                {% for error in form.start_date.errors %}
+                                    <p class="error-message">
+                                        <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 終了日 -->
+                    <div class="form-field">
+                        <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                            {{ form.end_date.label }}
+                        </label>
+                        <input type="date" 
+                               id="{{ form.end_date.id_for_label }}" 
+                               name="{{ form.end_date.name }}" 
+                               value="{{ form.end_date.value|date:'Y-m-d'|default:'' }}"
+                               class="form-input">
+                        <p class="mt-2 text-sm text-gray-500">終了日が未定の場合は空欄にしてください</p>
+                        {% if form.end_date.errors %}
+                            <div class="mt-2">
+                                {% for error in form.end_date.errors %}
+                                    <p class="error-message">
+                                        <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ステータス -->
+                <div class="form-field">
+                    <label for="{{ form.status.id_for_label }}" class="form-label required">
+                        {{ form.status.label }}
+                    </label>
+                    <select id="{{ form.status.id_for_label }}" 
+                            name="{{ form.status.name }}" 
+                            class="form-select"
+                            required>
+                        {% for value, label in form.status.field.choices %}
+                            <option value="{{ value }}" 
+                                    {% if form.status.value == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.status.errors %}
+                        <div class="mt-2">
+                            {% for error in form.status.errors %}
+                                <p class="error-message">
+                                    <svg class="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- フォームアクション -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center rounded-b-lg">
+                <div class="flex space-x-3">
+                    {% if form.instance.pk %}
+                        <a href="{% url 'assignments:project_detail' form.instance.pk %}"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            キャンセル
+                        </a>
+                    {% else %}
+                        <a href="{% url 'assignments:project_list' %}"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            キャンセル
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="flex space-x-3">
+                    {% if form.instance.pk and user.is_staff %}
+                    <button type="button" 
+                            onclick="deleteProject()" 
+                            class="inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H8a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        削除
+                    </button>
+                    {% endif %}
+                    <button type="submit" 
+                            class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {% if form.instance.pk %}更新する{% else %}作成する{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 開始日と終了日の関連性チェック
+    const startDateInput = document.getElementById('{{ form.start_date.id_for_label }}');
+    const endDateInput = document.getElementById('{{ form.end_date.id_for_label }}');
+    
+    function validateDates() {
+        if (startDateInput.value && endDateInput.value) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            if (endDate <= startDate) {
+                endDateInput.setCustomValidity('終了日は開始日より後の日付を選択してください');
+            } else {
+                endDateInput.setCustomValidity('');
+            }
+        }
+    }
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', validateDates);
+        endDateInput.addEventListener('change', validateDates);
+    }
+    
+    // プロジェクト削除機能
+    {% if form.instance.pk %}
+    window.deleteProject = function() {
+        if (confirm('このプロジェクトを削除しますか？\n\n注意: この操作は取り消せません。関連するアサイン情報も削除されます。')) {
+            // 削除機能は必要に応じて実装
+            alert('プロジェクト削除機能は現在準備中です。');
+        }
+    };
+    {% endif %}
+});
+</script>
+
+<style>
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-label.required::after {
+    content: " *";
+    color: #dc2626;
+}
+
+.form-input, .form-select {
+    display: block;
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    color: #111827;
+    background-color: #ffffff;
+}
+
+.form-input::placeholder {
+    color: #9ca3af;
+}
+
+.form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.error-message {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #dc2626;
+    display: flex;
+    align-items-center;
+}
+
+.error-icon {
+    margin-right: 0.25rem;
+    height: 1rem;
+    width: 1rem;
+    fill: currentColor;
+}
+
+.form-input:invalid {
+    border-color: #dc2626;
+}
+</style>
+{% endblock %}
