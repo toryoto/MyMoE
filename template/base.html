@@ -1,20 +1,22 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MyMoE - 社員ポータル{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon2.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=M+PLUS+1p:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=M+PLUS+Rounded+1c@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        'sans': ['Inter', 'Noto Sans JP', 'M PLUS 1p', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'sans-serif'],
-                        'japanese': ['Noto Sans JP', 'M PLUS 1p', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'sans-serif'],
+                        'sans': ['Inter', 'Noto Sans JP', 'M PLUS Rounded 1c', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', 'sans-serif'],
+                        'japanese': ['Noto Sans JP', 'M PLUS Rounded 1c', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'sans-serif'],
                         'modern': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
                     },
                     colors: {
@@ -142,7 +144,7 @@
         }
     </style>
 </head>
-<body class="bg-primary-50 min-h-screen flex flex-col">
+<body class="bg-primary-50 min-h-screen flex flex-col font-sans">
     <!-- ナビゲーションバー -->
     <nav class="bg-white shadow-sm border-b border-primary-200 relative z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -161,11 +163,13 @@
                     {% endif %}
                     
                     <!-- ロゴ・ブランド -->
-                    <div class="flex-shrink-0">
-                        <a href="{% url 'home' %}" class="text-2xl font-bold text-primary-600">
-                            MyMoE
-                        </a>
-                    </div>
+                    {% load static %}
+<div class="flex-shrink-0">
+    <a href="{% url 'home' %}" class="flex items-center text-2xl font-bold text-primary-600">
+        <img src="{% static 'images/MyMoE_icon5.png' %}" alt="MyMoE Logo" class="h-10 w-10 mr-1">
+        MyMoE
+    </a>
+</div>
                 </div>
 
                 <!-- 右側メニュー -->
